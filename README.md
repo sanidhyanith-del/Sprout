@@ -132,7 +132,7 @@ Make sure the destination directory is writable.
 ## 🗺 Roadmap
 
 - [x]  Repository Layer — Full JPA interface generation
-- [ ]  Service Layer — CRUD business logic scaffolding
+- [x]  Service Layer — CRUD business logic scaffolding
 - [ ]  DTO Generation — Request / Response object mapping
 - [ ]  Multiplicity Support — `@OneToMany`, `@ManyToOne` handling
 - [ ]  Path Resolution — Mapping to `src/main/java` directory trees
