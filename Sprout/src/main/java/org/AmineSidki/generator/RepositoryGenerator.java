@@ -27,7 +27,7 @@ public class RepositoryGenerator implements SproutGenerator{
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(repoFile))) {
             HashMap<String, Object> repoContext = new HashMap<>();
 
-            repoContext.put("PackageName", entityMetadata.getPackageName() + "repository");
+            repoContext.put("PackageName", entityMetadata.getPackageName());
             repoContext.put("ClassName", entityMetadata.getClassName());
             repoContext.put("IdType", entityMetadata.getIdType());
 
