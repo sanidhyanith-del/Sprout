@@ -1,23 +1,16 @@
 package org.AmineSidki.runnable;
 
 import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseResult;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.PackageDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 import org.AmineSidki.generator.RepositoryGenerator;
+import org.AmineSidki.generator.ServiceGenerator;
 import org.AmineSidki.model.EntityMetadata;
 import org.AmineSidki.util.EntityParser;
-import org.AmineSidki.util.ParserUtil;
 import picocli.CommandLine;
 
 import java.io.*;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.regex.Pattern;
 
 @CommandLine.Command(name="default" , version = "0.1" , description = "Default Sprout workflow")
 public class DefaultRunnable implements Runnable{
@@ -37,10 +30,17 @@ public class DefaultRunnable implements Runnable{
 
         JavaParser parser = new JavaParser();
         MustacheFactory mf = new DefaultMustacheFactory();
+
+        //TODO: Change this into a generator list
+
         RepositoryGenerator repoGen = new RepositoryGenerator();
+        ServiceGenerator serviceGen = new ServiceGenerator();
 
         //Compiling templates
         Mustache repoMustache = mf.compile("templates/RepositoryTemplate.mustache");
+        Mustache serviceMustache = mf.compile("templates/ServiceTemplate.mustache");
+
+        System.out.println(CommandLine.Help.Ansi.AUTO.string("@|bold Started generating code .. |@ \n"));
 
         for(File entity : files){
             if(!entity.isFile()){
@@ -50,8 +50,14 @@ public class DefaultRunnable implements Runnable{
             try {
                 //Parsing the code
                 EntityMetadata em = EntityParser.parse(parser , entity);
-                repoGen.generate(em , repoMustache , defaultDir);
 
+                //Generating
+                repoGen.generate(em , repoMustache , defaultDir);
+                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|bold,green -- Generated Repository for " + entity.getName() +" ! |@"));
+                serviceGen.generate(em , serviceMustache , defaultDir);
+                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|bold,green -- Generated Service for " + entity.getName() +" ! |@"));
+
+                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|bold,yellow --------------------------------------- |@"));
             } catch (FileNotFoundException e) {
                 throw new RuntimeException("An error occurred whilst reading files.");
             } catch (IOException e) {
