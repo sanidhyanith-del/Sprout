@@ -3,10 +3,11 @@ name: Build release with CI
 on:
   push:
     branches: [ "main" ]
+    tags:
+      - 'v1.*'
 
 jobs:
-  build:
-
+  release:
     runs-on: ubuntu-latest
 
     steps:
