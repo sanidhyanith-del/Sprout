@@ -1,6 +1,9 @@
 package {{PackageName}}.service;
 
 import {{PackageName}}.entity.{{ClassName}};
+
+import {{PackageName}}.dto.{{ClassName}}DTO;
+import {{PackageName}}.mapper.{{ClassName}}Mapper;
 import {{PackageName}}.repository.{{ClassName}}Repository;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -11,17 +14,18 @@ import java.util.*;
 @Service
 public class {{ClassName}}Service{
     private final {{ClassName}}Repository repo;
+    private final {{ClassName}}Mapper mapper;
 
-    public {{ClassName}} findById({{IdType}} id){
-        return repo.findById(id).orElseThrow(() -> new RuntimeException("Could not find {{ClassName}} with id " + id));
+    public {{ClassName}}DTO findById({{IdType}} id){
+        return mapper.toDto(repo.findById(id).orElseThrow(() -> new RuntimeException("Could not find {{ClassName}} with id " + id)));
     }
 
-    public List<{{ClassName}}> findAll(){
-        return repo.findAll();
+    public List< {{ClassName}}DTO > findAll(){
+        return repo.findAll().stream().map(e -> mapper.toDto(e));
     }
 
-    public {{ClassName}} save({{ClassName}} entity){
-        return repo.save(entity);
+    public {{ClassName}}DTO save({{ClassName}}DTO dto){
+        return mapper.toDto(repo.save(mapper.toEntity(dto)));
     }
 
     public void delete({{IdType}} id){

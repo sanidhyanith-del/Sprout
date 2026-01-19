@@ -31,7 +31,7 @@ By parsing your source code **AST**, Sprout automates the repetitive boilerplate
 
 ### Prerequisites
 
-- **JDK**: 1.8 or higher
+- **JDK**: 1.8 or higher (Preferably JDK 17+)
 - **Build Tool**: Maven 3.6.3+
 
 ### Building the Executable
@@ -75,11 +75,11 @@ java -jar Sprout-1.0.jar -d "/path/to/my-spring-project"
 
 ## ⚙️ CLI Options
 
-| Flag | Long Form | Description | Default |
-| --- | --- | --- | --- |
-| `-d` | `--dir` | Base directory containing the entity package | Required |
-| `-v` | `--version` | Print version information | — |
-| `-h` | `--help` | Display usage guide | — |
+| Flag | Long Form | Description |
+| --- | --- | --- | 
+| `-d` | `--dir` | Base directory containing the entity package |
+| `-v` | `--version` | Print version information |
+| `-h` | `--help` | Display usage guide |
 
 ---
 
@@ -87,7 +87,7 @@ java -jar Sprout-1.0.jar -d "/path/to/my-spring-project"
 
 Sprout is designed for **speed and convention-over-configuration**. Following these rules avoids crash-first scenarios.
 
-### 1️⃣ Package Naming Convention
+### 1 - Package Naming Convention
 
 Sprout assumes your entities are located in a package ending with **`.entity`**.
 
@@ -103,16 +103,16 @@ Output: com.example.project.repository
 
 ---
 
-### 2️⃣ Mandatory `@Id` Annotation
+### 2 - Mandatory `@Id` Annotation
 
 Sprout scans for the `@Id` annotation to determine the generic type of `JpaRepository`.
 
-- ❌ If an entity **does not** declare an `@Id`, it will be **skipped**.
-- ✅ A clear, descriptive error message will be displayed.
+-  If an entity **does not** declare an `@Id`, it will be **skipped**.
+-  A clear, descriptive error message will be displayed.
 
 ---
 
-### 3️⃣ Directory Mapping Assumptions
+### 3 - Directory Mapping Assumptions
 
 Currently, Sprout expects a **flat directory structure** during generation.
 
@@ -131,16 +131,22 @@ Make sure the destination directory is writable.
 
 ## 🗺 Roadmap
 
-- [x]  Repository Layer — Full JPA interface generation
-- [x]  Service Layer — CRUD business logic scaffolding
-- [x]  DTO Generation — Request / Response object mapping
-- [x]  Mappers Generation - DTO <--> Entity 
-- [ ]  Multiplicity Support — `@OneToMany`, `@ManyToOne` handling
-- [ ]  Path Resolution — Mapping to `src/main/java` directory trees
+- [x] Base engine building
+
+    - [x]  Repository Layer — Full JPA interface generation
+    - [x]  Service Layer — CRUD business logic scaffolding
+    - [x]  DTO Generation — Request / Response object mapping
+    - [x]  Mappers Generation — DTO <--> Entity 
+    - [x]  Multiplicity Support — `@OneToMany`, `@ManyToOne` handling
+
+
+- [ ] Additionnal logic layers
+
+    - [ ] Improve context awareness — Dynamic dependency manipulation depending on data
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are what make open-source ecosystems thrive.
 
@@ -158,11 +164,10 @@ Contributions are what make open-source ecosystems thrive.
 
 ---
 
-## 📄 License
+## License
 
 Distributed under the **MIT License**. See `LICENSE` for details.
 
 ---
 
 > README written in Vim btw :D
->

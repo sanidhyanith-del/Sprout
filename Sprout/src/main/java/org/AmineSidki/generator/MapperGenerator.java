@@ -1,6 +1,7 @@
 package org.AmineSidki.generator;
 
 import com.github.mustachejava.Mustache;
+import org.AmineSidki.enumeration.Association;
 import org.AmineSidki.model.EntityMetadata;
 import org.AmineSidki.model.FieldMetadata;
 
@@ -31,7 +32,7 @@ public class MapperGenerator implements SproutGenerator{
                 .stream()
                 .map(f -> new FieldMetadata(f.getType() ,
                         f.getName().substring(0,1).toUpperCase() + f.getName().substring(1) ,
-                        f.getAssociation()))
+                        f.getAssociation())).filter(f -> f.getAssociation().equals(Association.DEFAULT))
                 .collect(Collectors.toList());
 
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(mapperFile))) {

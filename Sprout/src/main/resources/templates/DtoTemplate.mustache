@@ -1,4 +1,4 @@
-package {{PackageName}}.dto.{{ReqRespL}}Dto;
+package {{PackageName}}.dto;
 
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -12,9 +12,9 @@ import java.util.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class {{ClassName}}{{ReqRespU}}DTO{
+public class {{ClassName}}DTO{
 {{#Fields}}
-    private {{type}} {{name}};
+    private {{{type}}} {{name}};
 {{/Fields}}
 }
 

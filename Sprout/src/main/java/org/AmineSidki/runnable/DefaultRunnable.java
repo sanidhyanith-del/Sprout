@@ -15,6 +15,7 @@ import picocli.CommandLine;
 
 import java.io.*;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 @CommandLine.Command(name="default" , version = "0.1" , description = "Default Sprout workflow")
 public class DefaultRunnable implements Runnable{
@@ -39,42 +40,53 @@ public class DefaultRunnable implements Runnable{
 
         //TODO: Change this into a generator list
 
-        RepositoryGenerator repoGen = new RepositoryGenerator();
-        ServiceGenerator serviceGen = new ServiceGenerator();
-        DtoGenerator dtoGen = new DtoGenerator();
-        MapperGenerator mapperGen = new MapperGenerator();
-
         //Compiling templates
         Mustache repoMustache = mf.compile("templates/RepositoryTemplate.mustache");
         Mustache serviceMustache = mf.compile("templates/ServiceTemplate.mustache");
         Mustache dtoMustache = mf.compile("templates/DtoTemplate.mustache");
         Mustache mapperMustache = mf.compile("templates/MapperTemplate.mustache");
 
-        System.out.println(CommandLine.Help.Ansi.AUTO.string("@|bold Generating.. |@ \n"));
+        System.out.println(CommandLine.Help.Ansi.AUTO.string("@|bold Pass 1/2 : Parsing Java |@ \n"));
 
+        HashMap<String , EntityMetadata> eml = new HashMap<>();
+
+        //Parsing the entirety of the files in the directory
         for(File entity : files){
             if(!entity.isFile()){
                 continue;
             }
 
             try {
-                //Parsing the code
                 EntityMetadata em = EntityParser.parse(parser , entity);
-
-                //Generating
-                repoGen.generate(em , repoMustache , defaultDir);
-                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating Repository for " + entity.getName()));
-                dtoGen.generate(em , dtoMustache , defaultDir);
-                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating DTOs for " + entity.getName()));
-                mapperGen.generate(em , mapperMustache , defaultDir);
-                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating Mapper for " + entity.getName()));
-                serviceGen.generate(em , serviceMustache , defaultDir);
-                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating Service for " + entity.getName()));
-
+                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Parsing " + em.getClassName()));
+                eml.put( em.getClassName() , em);
             } catch (FileNotFoundException e) {
-                throw new RuntimeException("An error occurred whilst reading files.");
+                throw new RuntimeException("An error occurred whilst parsing files");
+            }
+        }
+
+        RepositoryGenerator repoGen = new RepositoryGenerator();
+        ServiceGenerator serviceGen = new ServiceGenerator();
+        DtoGenerator dtoGen = new DtoGenerator(eml);
+        MapperGenerator mapperGen = new MapperGenerator();
+
+        System.out.println(CommandLine.Help.Ansi.AUTO.string("@|bold Pass 2/2 : Generating classes |@ \n"));
+
+        //Generating files
+        for(EntityMetadata em : eml.values()){
+
+            try {
+                repoGen.generate(em , repoMustache , defaultDir);
+                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating Repository for " + em.getClassName()));
+                dtoGen.generate(em , dtoMustache , defaultDir);
+                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating DTO for " + em.getClassName()));
+                mapperGen.generate(em , mapperMustache , defaultDir);
+                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating Mapper for " + em.getClassName()));
+                serviceGen.generate(em , serviceMustache , defaultDir);
+                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating Service for " + em.getClassName()));
+
             } catch (IOException e) {
-                throw new RuntimeException("An error occurred whilst generating files.");
+                throw new RuntimeException("An error occurred whilst reading files.");
             }
         }
 

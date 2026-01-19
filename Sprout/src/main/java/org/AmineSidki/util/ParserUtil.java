@@ -6,7 +6,6 @@ import com.github.javaparser.ast.expr.AnnotationExpr;
 import org.AmineSidki.enumeration.Association;
 import org.AmineSidki.model.FieldMetadata;
 
-import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,9 +23,6 @@ public class ParserUtil {
 
         for(AnnotationExpr a : fd.getAnnotations())
             if(annotations.contains(a.getNameAsString())){
-                return new ArrayList<>();
-/*
-                I will uncomment this block when I am ready to tackle the multiplicities :)
                 switch (a.getNameAsString()) {
                     case "OneToOne":
                         association = Association.ONE_TO_ONE;
@@ -41,7 +37,6 @@ public class ParserUtil {
                         association = Association.MANY_TO_MANY;
                         break;
                 }
-*/
             }
 
         List<FieldMetadata> lfm = new ArrayList<>();
@@ -51,5 +46,9 @@ public class ParserUtil {
         }
 
         return lfm;
+    }
+
+    public static String extractCollectionGenericType(String collection){
+        return collection.substring(collection.indexOf("<") + 1 , collection.lastIndexOf(">"));
     }
 }
