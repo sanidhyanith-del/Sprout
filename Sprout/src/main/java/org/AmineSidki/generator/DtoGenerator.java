@@ -6,6 +6,7 @@ import org.AmineSidki.enumeration.Association;
 import org.AmineSidki.exception.FileSystemException;
 import org.AmineSidki.model.EntityMetadata;
 import org.AmineSidki.model.FieldMetadata;
+import org.AmineSidki.model.HelperMetadata;
 import org.AmineSidki.util.ParserUtil;
 
 import javax.swing.text.html.parser.Parser;
@@ -16,12 +17,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class DtoGenerator implements SproutGenerator {
     private final Map <String, EntityMetadata> persistenceMetadata;
+    private final Map <String, HelperMetadata> helperMetadata;
 
     public void generate(EntityMetadata entityMetadata, Mustache mustache, String defDir) throws IOException, FileSystemException {
         //Create dto package if it doesn't exist yet
@@ -36,7 +36,7 @@ public class DtoGenerator implements SproutGenerator {
             throw new FileSystemException("");
         }
 
-        List <FieldMetadata> fields = ParserUtil.mapToDtoField(entityMetadata , persistenceMetadata);
+        List <FieldMetadata> fields = ParserUtil.mapToDtoField(entityMetadata , persistenceMetadata, helperMetadata);
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(dtoFile))) {
             HashMap < String, Object > dtoContext = new HashMap < > ();
