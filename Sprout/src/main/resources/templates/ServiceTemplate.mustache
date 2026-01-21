@@ -24,7 +24,7 @@ public class {{ClassName}}Service{
                 .orElseThrow(() -> new RuntimeException("{{ClassName}} not found with id: " + id));
     }
 
-    public List<{{ClassName}}DTO> findAll() {
+    public List< {{ClassName}}DTO> findAll() {
         return repository.findAll().stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
