@@ -4,34 +4,19 @@ Sprout is a lightweight, opinionated **CLI tool** designed to scaffold **Spring 
 
 By parsing your source code **AST**, Sprout automates the repetitive boilerplate required by a classic layered architecture — without relying on compiled classes or reflection.
 
----
+## Key Features
 
-## 🚀 Key Features
-
-- **AST Analysis**
-    
-    Uses **JavaParser** to analyze Java source code directly. No compilation step required.
-    
-- **Entity Metadata Extraction**
-    
-    Automatically detects `@Id` fields and infers identifier types for generated layers.
-    
-- **Mustache Templating**
-    
-    Clean separation between generation logic and code structure through Mustache templates.
-    
-- **Extensible Architecture**
-    
-    Built around pluggable `SproutGenerator`s, making it easy to add new layers (Services, Controllers, etc.).
-    
-
----
+- Java code parsing (source → AST)
+- Entity vs. Helper class detection
+- Context gathering
+- Templating (Using mustache)
+- Extensibility (**`SproutParser`** , **`SproutGenerator`**)
 
 ## 🛠 Installation & Setup
 
 ### Prerequisites
 
-- **JDK**: 1.8 or higher (Preferably JDK 17+)
+- **JDK**: 1.8 or higher *(JDK 17+ recommended)*
 - **Build Tool**: Maven 3.6.3+
 
 ### Building the Executable
@@ -41,133 +26,108 @@ By parsing your source code **AST**, Sprout automates the repetitive boilerplate
 ```bash
 git clone https://github.com/AmineSidki/Sprout.git
 cd Sprout
-
 ```
 
 1. **Build the shaded JAR**
 
 ```bash
 mvn clean package
-
 ```
 
 The standalone executable will be generated at:
 
 ```
-target/Sprout-1.0.jar
-
+target/Sprout-*.*.jar
 ```
 
----
-
-## 💻 Usage
+## Usage
 
 Sprout operates **relative to a project root**.
 
 - Use the `d` flag to point to your Spring Boot project directory.
 
 ```bash
-java -jar Sprout-1.0.jar -d "/path/to/my-spring-project"
-
+java -jar Sprout-*.*.jar -d "/path/to/my-spring-project"
 ```
 
----
+## ⚠️ Read before running
 
-## ⚙️ CLI Options
-
-| Flag | Long Form | Description |
-| --- | --- | --- | 
-| `-d` | `--dir` | Base directory containing the entity package |
-| `-v` | `--version` | Print version information |
-| `-h` | `--help` | Display usage guide |
-
----
-
-## 💡 Pro Tips (Read This Before Running)
-
-Sprout is designed for **speed and convention-over-configuration**. Following these rules avoids crash-first scenarios.
-
-### 1 - Package Naming Convention
-
-Sprout assumes your entities are located in a package ending with **`.entity`**.
-
-It will automatically strip this suffix and replace it with the target layer name.
-
-**Example**:
-
-```
-Input : com.example.project.entity
-Output: com.example.project.repository
-
-```
-
----
-
-### 2 - Mandatory `@Id` Annotation
-
-Sprout scans for the `@Id` annotation to determine the generic type of `JpaRepository`.
-
--  If an entity **does not** declare an `@Id`, it will be **skipped**.
--  A clear, descriptive error message will be displayed.
-
----
-
-### 3 - Directory Mapping Assumptions
-
-Currently, Sprout expects a **flat directory structure** during generation.
-
-Example:
-
-```
-my-project/
-├── entity/          <-- Source
-└── repository/      <-- Destination (auto-created)
-
-```
-
-Make sure the destination directory is writable.
-
----
-
-## 🗺 Roadmap
-
-- [x] Base engine building
-
-    - [x]  Repository Layer — Full JPA interface generation
-    - [x]  Service Layer — CRUD business logic scaffolding
-    - [x]  DTO Generation — Request / Response object mapping
-    - [x]  Mappers Generation — DTO <--> Entity 
-    - [x]  Multiplicity Support — `@OneToMany`, `@ManyToOne` handling
-
-
-- [ ] Additionnal logic layers
-
-    - [ ] Improve context awareness — Dynamic dependency manipulation depending on data
-
----
-
-## Contributing
-
-Contributions are what make open-source ecosystems thrive.
-
-1. Fork the project
-2. Create your feature branch
+- **Package Naming Convention**
     
-    ```bash
-    git checkout -b feature/NewGenerator
+    Sprout assumes your entities are located in a package ending with **`.entity`**.
+    
+    It will automatically strip this suffix and replace it with the target layer name.
+    
+    **Example**:
     
     ```
+    Input : com.example.project.entity
+    Output: com.example.project.repository
+    ```
     
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
+- **Mandatory `@Id` Annotation**
+    
+    Sprout scans for the `@Id` annotation to determine the generic type of `JpaRepository`.
+    
+    - If an entity **does not** declare an `@Id`, it will be **skipped**.
+    - if a class figures in the package and isn’t annotated with `@Entity` it will be accounted for as a helper class
+    - A warning message will be displayed.
+- **Directory Mapping Assumptions**
+    
+    Currently, Sprout expects a **flat directory structure** during generation.
+    
+    Example:
+    
+    ```
+    my-project/
+    ├── entity/          <-- Source
+    └── repository/      <-- Destination (generated)
+    ```
+    
+    Make sure the destination directory is writable.
+    
 
----
+## Roadmap
 
-## License
+- [x]  Repository layer — Full JPA interface generation
+- [x]  Service layer — CRUD business logic scaffolding
+- [ ]  Controller layer — Exposing routes
+- [ ]  Exception handling — generating custom exceptions
+- [x]  DTO generation — Request / Response object mapping
+- [x]  Multiplicity support — `@OneToMany`, `@ManyToOne` handling
+- [x]  Context gathering — Making sure all classes in the project know of the others
+- [ ]  Dynamic dependency assigning
+- [ ]  Dynamic imports generation
+- [x]  Parsing parallelizations — Using multithreading to accelerate java parsing
+- [ ]  `@DtoIgnore`, `@RecordDto` — Using annotations to further customize the DTO layer generation
+- [ ]  Accounting for `@JsonIgnore`
+- [ ]  Custom configuration — De-coupling the program from the pre-defined project structure
+- [ ]  Recursively course the entity package’s sub directories to get all the present classes
+- [ ]  Path resolution — Mapping to `src/main/java` directory trees
+
+## 🤝 Contributing
+
+- **Rules :**
+    - If the contribution regards an **unreported** issue, open an issue, then if you are willing to propose a solution for it put it in regards the aforementioned issue.
+    - The PRs that will be prioritized are those about **application-breaking bugs** rather than additional features.
+    - Opened issues may concern :
+        - Bugs
+        - New Features
+        - README improvements
+        - Discussions regarding current/planned features
+    - When issuing a PR, refer to the **concerned issue**, and provide details on the way the issue’s solution was implemented.
+- **Issuing a pull request :**
+    1. Fork the project
+    2. Create your feature branch
+        
+        ```bash
+        git checkout -b feature/NewGenerator
+        ```
+        
+    3. Commit your changes
+    4. Push to the branch
+    5. Open a Pull Request
+
+## 📄 License
 
 Distributed under the **MIT License**. See `LICENSE` for details.
-
----
-
-> README written in Vim btw :D
