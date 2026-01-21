@@ -22,7 +22,8 @@ import picocli.CommandLine;
 
 import java.io.*;
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.concurrent.ConcurrentHashMap;
 
 @CommandLine.Command(name="default" , version = "0.1" , description = "Default Sprout workflow")
 public class DefaultRunnable implements Runnable{
@@ -41,7 +42,7 @@ public class DefaultRunnable implements Runnable{
             throw new RuntimeException("Couldn't resolve entity package directory !");
         }
 
-        JavaParser parser = new JavaParser();
+        ThreadLocal<JavaParser> parser = ThreadLocal.withInitial(JavaParser::new);
         MustacheFactory mf = new DefaultMustacheFactory();
 
         //TODO: Change this into a generator list
@@ -54,40 +55,42 @@ public class DefaultRunnable implements Runnable{
 
         System.out.println(CommandLine.Help.Ansi.AUTO.string("@|bold Pass 1/2 : Parsing Java |@ \n"));
 
-        HashMap<String , EntityMetadata> emm = new HashMap<>();
-        HashMap<String , HelperMetadata> hmm = new HashMap<>();
+        ConcurrentHashMap<String , EntityMetadata> emm = new ConcurrentHashMap<>();
+        ConcurrentHashMap<String , HelperMetadata> hmm = new ConcurrentHashMap<>();
 
-        EntityParser entityParser = new EntityParser();
-        HelperParser helperParser = new HelperParser();
+        ThreadLocal<EntityParser> entityParser = ThreadLocal.withInitial(EntityParser::new);
+        ThreadLocal<HelperParser> helperParser = ThreadLocal.withInitial(HelperParser::new);
 
         //Parsing the entirety of the files in the directory
-        for(File entity : files){
-            if(!entity.isFile()){
-                continue;
-            }
+        Arrays.stream(files).parallel().forEach(
+                entity -> {
+                    if(!entity.isFile()){
+                        return;
+                    }
 
-            CompilationUnit cu = null;
-            try {
-                //Parsing java --> AST
-                ParseResult<CompilationUnit> pr = parser.parse(entity);
-                cu = pr.getResult().orElseThrow(() -> new ParsingException(""));
+                    CompilationUnit cu = null;
+                    try {
+                        //Parsing java --> AST
+                        ParseResult<CompilationUnit> pr = parser.get().parse(entity);
+                        cu = pr.getResult().orElseThrow(() -> new ParsingException(""));
 
-                //Parsing AST --> EntityMetadata
-                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Parsing " + entity.getName()));
-                EntityMetadata em = entityParser.parse(cu , entity.getName());
-                emm.put( em.getClassName() , em);
-            } catch (NotAnEntityException e){
-                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,yellow  WARNING|@ --- @|magenta [Sprout]|@ : No @Entity annotation in file " + entity.getName() + ", it will be accounted for as a helper class."));
-                try{
-                    HelperMetadata hm = helperParser.parse(cu , entity.getName());
-                    hmm.put(hm.getClassName() , hm);
-                }catch(ParsingException | FileNotFoundException ee){
-                    System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,red  ERROR|@ --- @|magenta [Sprout]|@ : Parsing failed for file " + entity.getName()));
+                        //Parsing AST --> EntityMetadata
+                        System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Parsing " + entity.getName()));
+                        EntityMetadata em = entityParser.get().parse(cu , entity.getName());
+                        emm.put( em.getClassName() , em);
+                    } catch (NotAnEntityException e){
+                        System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,yellow  WARNING|@ --- @|magenta [Sprout]|@ : No @Entity annotation in file " + entity.getName() + ", it will be accounted for as a helper class."));
+                        try{
+                            HelperMetadata hm = helperParser.get().parse(cu , entity.getName());
+                            hmm.put(hm.getClassName() , hm);
+                        }catch(ParsingException | FileNotFoundException ee){
+                            System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,red  ERROR|@ --- @|magenta [Sprout]|@ : Parsing failed for file " + entity.getName()));
+                        }
+                    } catch (ParsingException | FileNotFoundException e){
+                        System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,red  ERROR|@ --- @|magenta [Sprout]|@ : Parsing failed for file " + entity.getName()));
+                    }
                 }
-            } catch (ParsingException | FileNotFoundException e){
-                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,red  ERROR|@ --- @|magenta [Sprout]|@ : Parsing failed for file " + entity.getName()));
-            }
-        }
+        );
 
         RepositoryGenerator repoGen = new RepositoryGenerator();
         ServiceGenerator serviceGen = new ServiceGenerator();
