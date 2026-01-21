@@ -1,6 +1,8 @@
 package org.AmineSidki.runnable;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseResult;
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
@@ -12,13 +14,16 @@ import org.AmineSidki.generator.MapperGenerator;
 import org.AmineSidki.generator.RepositoryGenerator;
 import org.AmineSidki.generator.ServiceGenerator;
 import org.AmineSidki.model.EntityMetadata;
+import org.AmineSidki.model.HelperMetadata;
+import org.AmineSidki.parser.HelperParser;
 import org.AmineSidki.util.BannerPrinter;
-import org.AmineSidki.util.EntityParser;
+import org.AmineSidki.parser.EntityParser;
 import picocli.CommandLine;
 
 import java.io.*;
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.concurrent.ConcurrentHashMap;
 
 @CommandLine.Command(name="default" , version = "0.1" , description = "Default Sprout workflow")
 public class DefaultRunnable implements Runnable{
@@ -30,7 +35,6 @@ public class DefaultRunnable implements Runnable{
     public void run() {
         BannerPrinter.print();
 
-
         File entityPackage = new File(defaultDir + "/entity");
         File[] files = entityPackage.listFiles();
 
@@ -38,7 +42,7 @@ public class DefaultRunnable implements Runnable{
             throw new RuntimeException("Couldn't resolve entity package directory !");
         }
 
-        JavaParser parser = new JavaParser();
+        ThreadLocal<JavaParser> parser = ThreadLocal.withInitial(JavaParser::new);
         MustacheFactory mf = new DefaultMustacheFactory();
 
         //TODO: Change this into a generator list
@@ -51,34 +55,53 @@ public class DefaultRunnable implements Runnable{
 
         System.out.println(CommandLine.Help.Ansi.AUTO.string("@|bold Pass 1/2 : Parsing Java |@ \n"));
 
-        HashMap<String , EntityMetadata> eml = new HashMap<>();
+        ConcurrentHashMap<String , EntityMetadata> emm = new ConcurrentHashMap<>();
+        ConcurrentHashMap<String , HelperMetadata> hmm = new ConcurrentHashMap<>();
+
+        ThreadLocal<EntityParser> entityParser = ThreadLocal.withInitial(EntityParser::new);
+        ThreadLocal<HelperParser> helperParser = ThreadLocal.withInitial(HelperParser::new);
 
         //Parsing the entirety of the files in the directory
-        for(File entity : files){
-            if(!entity.isFile()){
-                continue;
-            }
+        Arrays.stream(files).parallel().forEach(
+                entity -> {
+                    if(!entity.isFile()){
+                        return;
+                    }
 
-            try {
-                EntityMetadata em = EntityParser.parse(parser , entity);
-                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Parsing " + em.getClassName()));
-                eml.put( em.getClassName() , em);
-            } catch (ParsingException | FileNotFoundException e){
-                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,red  ERROR|@ --- @|magenta [Sprout]|@ : Parsing failed for file " + entity.getName()));
-            } catch (NotAnEntityException e){
-                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,yellow  WARNING|@ --- @|magenta [Sprout]|@ : No @Entity annotation in file " + entity.getName() + ", skipping.."));
-            }
-        }
+                    CompilationUnit cu = null;
+                    try {
+                        //Parsing java --> AST
+                        ParseResult<CompilationUnit> pr = parser.get().parse(entity);
+                        cu = pr.getResult().orElseThrow(() -> new ParsingException(""));
+
+                        //Parsing AST --> EntityMetadata
+                        System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Parsing " + entity.getName()));
+                        EntityMetadata em = entityParser.get().parse(cu , entity.getName());
+                        emm.put( em.getClassName() , em);
+                    } catch (NotAnEntityException e){
+                        System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,yellow  WARNING|@ --- @|magenta [Sprout]|@ : No @Entity annotation in file " + entity.getName() + ", it will be accounted for as a helper class."));
+                        try{
+                            HelperMetadata hm = helperParser.get().parse(cu , entity.getName());
+                            hmm.put(hm.getClassName() , hm);
+                        }catch(ParsingException | FileNotFoundException ee){
+                            System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,red  ERROR|@ --- @|magenta [Sprout]|@ : Parsing failed for file " + entity.getName()));
+                        }
+                    } catch (ParsingException | FileNotFoundException e){
+                        System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,red  ERROR|@ --- @|magenta [Sprout]|@ : Parsing failed for file " + entity.getName()));
+                    }
+                }
+        );
 
         RepositoryGenerator repoGen = new RepositoryGenerator();
         ServiceGenerator serviceGen = new ServiceGenerator();
-        DtoGenerator dtoGen = new DtoGenerator(eml);
+        DtoGenerator dtoGen = new DtoGenerator(emm, hmm);
         MapperGenerator mapperGen = new MapperGenerator();
 
-        System.out.println(CommandLine.Help.Ansi.AUTO.string("@|bold Pass 2/2 : Generating classes |@ \n"));
+        System.out.println(CommandLine.Help.Ansi.AUTO.string("@|bold \nPass 2/2 : Generating classes |@ \n"));
+
 
         //Generating files
-        for(EntityMetadata em : eml.values()){
+        for(EntityMetadata em : emm.values()){
 
             try {
                 repoGen.generate(em , repoMustache , defaultDir);

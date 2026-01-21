@@ -6,6 +6,7 @@ import com.github.javaparser.ast.expr.AnnotationExpr;
 import org.AmineSidki.enumeration.Association;
 import org.AmineSidki.model.EntityMetadata;
 import org.AmineSidki.model.FieldMetadata;
+import org.AmineSidki.model.HelperMetadata;
 
 import javax.swing.text.html.parser.Entity;
 import java.util.ArrayList;
@@ -56,8 +57,8 @@ public class ParserUtil {
         return collection.substring(collection.indexOf("<") + 1 , collection.lastIndexOf(">"));
     }
 
-    //This does the parsing of the fields from regular fields with associations to, fields containing Collections instead
-    public static List<FieldMetadata> mapToDtoField(EntityMetadata em , Map<String , EntityMetadata> persistenceMap){
+    //Adapts fields with associations into their Java counterpart
+    public static List<FieldMetadata> mapToDtoField(EntityMetadata em , Map<String , EntityMetadata> persistenceMap , Map<String , HelperMetadata> helperMap){
         List<FieldMetadata> output = new ArrayList<>();
 
         for(FieldMetadata fm : em.getFields()){
@@ -67,24 +68,34 @@ public class ParserUtil {
                 switch (fm.getAssociation()) {
                     case ONE_TO_MANY:
                     case MANY_TO_MANY:
-                        idType = Optional
-                                .ofNullable(persistenceMap
-                                                .get(extractCollectionGenericType(fm.getType())))
-                                .orElse(new EntityMetadata("" , "" , "Unknown" , null)).getIdType();
+                        String typeName = extractCollectionGenericType(fm.getType());
+                        if(persistenceMap.containsKey(typeName)){
+                            idType = persistenceMap.get(typeName).getIdType();
+                        }else if(helperMap.containsKey(typeName)){
+                            idType = helperMap.get(typeName).getClassName();
+                        }else{
+                            idType = "Object";
+                        }
+
+
                         fieldType = "Set<" + idType + ">";
                         break;
 
                     case ONE_TO_ONE:
                     case MANY_TO_ONE:
-                        idType = Optional
-                                .ofNullable(persistenceMap
-                                        .get(fm.getType()))
-                                .orElse(new EntityMetadata("" , "" , "Unknown" , null)).getIdType();
+                        if(persistenceMap.containsKey(fm.getType())){
+                            idType = persistenceMap.get(fm.getType()).getIdType();
+                        }else if(helperMap.containsKey(fm.getType())){
+                            idType = helperMap.get(fm.getType()).getClassName();
+                        }else{
+                            idType = "Object";
+                        }
+
                         fieldType = idType;
                         break;
 
                     default:
-                        fieldType = "Unknown";
+                        fieldType = "Object";
                 }
 
                 f = new FieldMetadata(fieldType , fm.getName() , fm.getAssociation());
