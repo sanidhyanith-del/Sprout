@@ -63,7 +63,7 @@ public class ImportGenerator implements SproutSourceGenerator {
                 if(pm.get(fieldType.getRegularName()) == null
                         && hm.get(fieldType.getRegularName()) == null
                         && (!fieldType.getFullQualifiedName().startsWith("java.lang.")
-                        || !fieldType.getFullQualifiedName().substring(10).contains("."))){
+                        || fieldType.getFullQualifiedName().substring(10).contains("."))){
                     //if they are neither an entity nor a helper class, they are outside the package and need to be imported
                     imports.add(fieldType.getFullQualifiedName());
                 }
