@@ -19,10 +19,9 @@ import org.AmineSidki.generator.FileGenerator.DtoGenerator;
 import org.AmineSidki.generator.FileGenerator.MapperGenerator;
 import org.AmineSidki.generator.FileGenerator.RepositoryGenerator;
 import org.AmineSidki.generator.FileGenerator.ServiceGenerator;
-import org.AmineSidki.generator.ImportGenerator.DtoImportGenerator;
-import org.AmineSidki.generator.ImportGenerator.MapperImportGenerator;
-import org.AmineSidki.generator.ImportGenerator.RepositoryImportGenerator;
-import org.AmineSidki.generator.ImportGenerator.ServiceImportGenerator;
+import org.AmineSidki.generator.ImportsGenerator.DtoImportsGenerator;
+import org.AmineSidki.generator.ImportsGenerator.GenericImportsGenerator;
+import org.AmineSidki.generator.ImportsGenerator.MapperImportsGenerator;
 import org.AmineSidki.model.EntityMetadata;
 import org.AmineSidki.model.HelperMetadata;
 import org.AmineSidki.parser.HelperParser;
@@ -101,7 +100,7 @@ public class DefaultRunnable implements Runnable{
         ThreadLocal<EntityParser> entityParser = ThreadLocal.withInitial(EntityParser::new);
         ThreadLocal<HelperParser> helperParser = ThreadLocal.withInitial(HelperParser::new);
 
-        //Parsing the entirety of the files in the directory
+        //Parsing
         Arrays.stream(files).parallel().forEach(
                 entity -> {
                     if(!entity.isFile()){
@@ -122,6 +121,10 @@ public class DefaultRunnable implements Runnable{
                     } catch (NotAnEntityException e){
                         System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,yellow  WARN|@ --- @|magenta [Sprout]|@ : No @Entity annotation in file " + entity.getName()));
                         try{
+                            if(cu == null){
+                                throw new ParsingException("");
+                            }
+
                             HelperMetadata hm = helperParser.get().parse(cu , entity.getName());
                             hmm.put(hm.className() , hm);
                         }catch(ParsingException | FileNotFoundException ee){
@@ -133,32 +136,31 @@ public class DefaultRunnable implements Runnable{
                 }
         );
 
+        GenericImportsGenerator genericImportsGenerator = new GenericImportsGenerator();
+        DtoImportsGenerator dtoImportsGen = new DtoImportsGenerator();
+        MapperImportsGenerator mapperImportGen = new MapperImportsGenerator();
+
         MapperDependencyGenerator mapperDependencyGen = new MapperDependencyGenerator();
 
-        RepositoryGenerator repoGen = new RepositoryGenerator();
-        ServiceGenerator serviceGen = new ServiceGenerator();
-        DtoGenerator dtoGen = new DtoGenerator(emm, hmm);
-        MapperGenerator mapperGen = new MapperGenerator(emm, hmm , mapperDependencyGen);
-
-        DtoImportGenerator dtoImportGen = new DtoImportGenerator();
-        MapperImportGenerator mapperImportGen = new MapperImportGenerator();
-        RepositoryImportGenerator repoImportGen = new RepositoryImportGenerator();
-        ServiceImportGenerator serviceImportGen = new ServiceImportGenerator();
+        RepositoryGenerator repoGen = new RepositoryGenerator(genericImportsGenerator, emm, hmm);
+        DtoGenerator dtoGen = new DtoGenerator(dtoImportsGen, emm , hmm);
+        MapperGenerator mapperGen = new MapperGenerator(mapperImportGen , mapperDependencyGen, emm, hmm);
+        ServiceGenerator serviceGen = new ServiceGenerator(genericImportsGenerator, emm, hmm);
 
         System.out.println(CommandLine.Help.Ansi.AUTO.string("@|bold \nPass 3/3 : Generating classes |@ \n"));
 
 
-        //Generating files
+        //Generation
         for(EntityMetadata em : emm.values()){
 
             try {
-                repoGen.generate(repoImportGen ,em , repoMustache , defaultDir);
+                repoGen.generate(em , repoMustache , defaultDir);
                 System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating Repository for " + em.className()));
-                dtoGen.generate(dtoImportGen, em , dtoMustache , defaultDir);
+                dtoGen.generate(em , dtoMustache , defaultDir);
                 System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating DTO for " + em.className()));
-                mapperGen.generate(mapperImportGen, em , mapperMustache , defaultDir);
+                mapperGen.generate(em , mapperMustache , defaultDir);
                 System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating Mapper for " + em.className()));
-                serviceGen.generate(serviceImportGen ,em , serviceMustache , defaultDir);
+                serviceGen.generate(em , serviceMustache , defaultDir);
                 System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating Service for " + em.className()));
 
             } catch (IOException e) {

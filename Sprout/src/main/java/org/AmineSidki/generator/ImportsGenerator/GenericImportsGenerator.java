@@ -1,6 +1,6 @@
-package org.AmineSidki.generator.ImportGenerator;
+package org.AmineSidki.generator.ImportsGenerator;
 
-import org.AmineSidki.generator.SproutImportGenerator;
+import org.AmineSidki.generator.SproutImportsGenerator;
 import org.AmineSidki.model.EntityMetadata;
 import org.AmineSidki.model.HelperMetadata;
 
@@ -8,7 +8,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 
-public class ServiceImportGenerator implements SproutImportGenerator {
+public class GenericImportsGenerator implements SproutImportsGenerator {
+
     @Override
     public HashSet<String> generate(EntityMetadata entityMetadata, Map<String, EntityMetadata> persistenceMap, Map<String, HelperMetadata> helperMap) {
         if((!entityMetadata.id().type().getFullQualifiedName().startsWith("java.lang.")

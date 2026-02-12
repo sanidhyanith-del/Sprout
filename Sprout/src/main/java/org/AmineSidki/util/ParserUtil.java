@@ -137,7 +137,7 @@ public class ParserUtil {
                         }
 
 
-                        fieldType = "Set<" + idType.getRegularName() + ">";
+                        fieldType = "List<" + idType.getRegularName() + ">";
                         break;
 
                     case ONE_TO_ONE:

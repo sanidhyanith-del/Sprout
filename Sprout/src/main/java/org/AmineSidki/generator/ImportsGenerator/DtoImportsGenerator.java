@@ -1,7 +1,7 @@
-package org.AmineSidki.generator.ImportGenerator;
+package org.AmineSidki.generator.ImportsGenerator;
 
 import org.AmineSidki.enumeration.Association;
-import org.AmineSidki.generator.SproutImportGenerator;
+import org.AmineSidki.generator.SproutImportsGenerator;
 import org.AmineSidki.model.EntityMetadata;
 import org.AmineSidki.model.FieldMetadata;
 import org.AmineSidki.model.HelperMetadata;
@@ -11,7 +11,7 @@ import org.AmineSidki.util.ParserUtil;
 import java.util.HashSet;
 import java.util.Map;
 
-public class DtoImportGenerator implements SproutImportGenerator {
+public class DtoImportsGenerator implements SproutImportsGenerator {
     @Override
     public HashSet<String> generate(EntityMetadata entityMetadata, Map<String, EntityMetadata> pm, Map<String, HelperMetadata> hm) {
         HashSet<String> imports = new HashSet<>();
@@ -24,7 +24,7 @@ public class DtoImportGenerator implements SproutImportGenerator {
             if(!fm.association().equals(Association.DEFAULT) ){
                 // if it is one of these associations, then it is mandatory to import java.util.Set
                 if(fm.association().equals(Association.ONE_TO_MANY) || fm.association().equals(Association.MANY_TO_MANY)){
-                    imports.add("java.util.Set");
+                    imports.add("java.util.List");
                     fieldType = new TypeMetadata(ParserUtil.extractCollectionGenericType(fieldType.getRegularName()) , fieldType.getFullQualifiedName());
                 }
                 //check if the type is an entity
