@@ -1,12 +1,13 @@
 package org.AmineSidki.generator.DependencyGenerator;
 
+import org.AmineSidki.generator.SproutDependencyGenerator;
 import org.AmineSidki.model.EntityMetadata;
 import org.AmineSidki.util.ParserUtil;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class MapperDependencyGenerator {
+public class MapperDependencyGenerator implements SproutDependencyGenerator {
     public HashSet<String> generate(EntityMetadata entity, Set<String> imports){
         HashSet<String> dependencies = new HashSet<>();
         String repoPackage = ParserUtil.getPackageName(entity.packageName()) + ".repository.";

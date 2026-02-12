@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.Optional;
 
 {{#Imports}}
 import {{.}};
@@ -23,22 +22,24 @@ public class {{ClassName}}Service{
     private final {{ClassName}}Repository repository;
     private final {{ClassName}}Mapper mapper;
 
-    public {{ClassName}}DTO findById({{IdType}} id) {
-        return repository.findById(id)
-                .map(mapper::toDto)
-                .orElseThrow(() -> new RuntimeException("{{ClassName}} not found with id: " + id));
+    @Transactional(readOnly = true)
+    public List<{{ClassName}}DTO> findAll() {
+        return repository.findAll().stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public List< {{ClassName}}DTO> findAll() {
-        return repository.findAll().stream()
-                .map(mapper::toDto)
-                .collect(Collectors.toList());
+    @Transactional(readOnly= true)
+    public {{ClassName}}DTO findById({{IdType}} id) {
+        return repository.findById(id)
+                .map(mapper::toDTO)
+                .orElseThrow(() -> new RuntimeException("{{ClassName}} not found with id: " + id));
     }
 
     @Transactional
     public {{ClassName}}DTO save({{ClassName}}DTO dto) {
         {{ClassName}} entity = mapper.toEntity(dto);
-        return mapper.toDto(repository.save(entity));
+        return mapper.toDTO(repository.save(entity));
     }
 
     @Transactional

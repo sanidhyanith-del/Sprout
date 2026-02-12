@@ -6,8 +6,8 @@ import org.AmineSidki.enumeration.Association;
 import org.AmineSidki.exception.FileSystemException;
 import org.AmineSidki.exception.ParsingException;
 import org.AmineSidki.generator.DependencyGenerator.MapperDependencyGenerator;
+import org.AmineSidki.generator.ImportsGenerator.MapperImportsGenerator;
 import org.AmineSidki.generator.SproutFileGenerator;
-import org.AmineSidki.generator.SproutImportGenerator;
 import org.AmineSidki.model.EntityMetadata;
 import org.AmineSidki.model.FieldMetadata;
 import org.AmineSidki.model.HelperMetadata;
@@ -23,14 +23,15 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class MapperGenerator implements SproutFileGenerator {
+    private final MapperImportsGenerator mapperImportsGenerator;
+    private final MapperDependencyGenerator mapperDependencyGen;
     private final Map<String, EntityMetadata> persistenceMap;
     private final Map<String, HelperMetadata> helperMap;
-    private final MapperDependencyGenerator mapperDependencyGen;
 
     public record DependencyView(String type, String name) {};
     public record AssociationView(FieldMetadata field , FieldMetadata id , boolean multiple , String className) {};
 
-    public void generate(SproutImportGenerator importsGenerator, EntityMetadata entityMetadata, Mustache mustache , String defDir) throws IOException , FileSystemException{
+    public void generate( EntityMetadata entityMetadata, Mustache mustache , String defDir) throws IOException , FileSystemException{
         //Create the mapper package if it doesn't exist yet
         File mapperPackage = new File(defDir + "/mapper");
         if(!mapperPackage.exists() && !mapperPackage.mkdir()){
@@ -57,19 +58,22 @@ public class MapperGenerator implements SproutFileGenerator {
                 .filter(f -> !f.association().equals(Association.DEFAULT))
                 .toList();
 
+        final Set<String> imports = mapperImportsGenerator.generate(entityMetadata ,persistenceMap , helperMap);
+
         List<AssociationView> associations = associationFields.stream().map(f -> {
-           FieldMetadata fieldMetadata = new FieldMetadata(f.type() ,
-                   f.name() ,
-                   f.association());
+            FieldMetadata fieldMetadata = new FieldMetadata(f.type() ,
+                    f.name() ,
+                    f.association());
 
             f = new FieldMetadata(
-                        new TypeMetadata((f.association() == Association.ONE_TO_MANY || f.association() == Association.MANY_TO_MANY)?
-                                ParserUtil.extractCollectionGenericType(f.type().getRegularName().toLowerCase()) : f.type().getRegularName().toLowerCase(),
-                                f.type().getFullQualifiedName()),
-                        f.name().substring(0,1).toUpperCase() + f.name().substring(1) ,
-                        f.association());
+                    new TypeMetadata((f.association() == Association.ONE_TO_MANY || f.association() == Association.MANY_TO_MANY)?
+                            ParserUtil.extractCollectionGenericType(f.type().getRegularName().toLowerCase()) : f.type().getRegularName().toLowerCase(),
+                            f.type().getFullQualifiedName()),
+                    f.name().substring(0,1).toUpperCase() + f.name().substring(1) ,
+                    f.association());
 
             String cleanField = fieldMetadata.type().getRegularName();
+            imports.add("org.springframework.beans.factory.annotation.Autowired");
             boolean multiple = false;
 
             if(f.association() == Association.ONE_TO_MANY || f.association() == Association.MANY_TO_MANY){
@@ -87,7 +91,6 @@ public class MapperGenerator implements SproutFileGenerator {
             throw new ParsingException("");
         }).collect(Collectors.toList());
 
-        Set<String> imports = importsGenerator.generate(entityMetadata ,persistenceMap , helperMap);
         List<DependencyView> dependencies = mapperDependencyGen.generate(entityMetadata, imports)
                 .stream()
                 .map(s -> {
@@ -99,12 +102,12 @@ public class MapperGenerator implements SproutFileGenerator {
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(mapperFile))) {
             HashMap<String, Object> mapperContext = new HashMap<>();
 
+            mapperContext.put("Imports" , imports);
+            mapperContext.put("Dependencies" , dependencies);
             mapperContext.put("PackageName", entityMetadata.packageName());
             mapperContext.put("ClassName", entityMetadata.className());
             mapperContext.put("IdType", entityMetadata.id().type().getRegularName());
             mapperContext.put("Fields" , fields);
-            mapperContext.put("Imports" , imports);
-            mapperContext.put("Dependencies" , dependencies);
             mapperContext.put("Associations" , associations);
 
             mustache.execute(writer, mapperContext);

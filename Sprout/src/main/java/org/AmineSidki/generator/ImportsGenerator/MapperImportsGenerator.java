@@ -1,7 +1,7 @@
-package org.AmineSidki.generator.ImportGenerator;
+package org.AmineSidki.generator.ImportsGenerator;
 
 import org.AmineSidki.enumeration.Association;
-import org.AmineSidki.generator.SproutImportGenerator;
+import org.AmineSidki.generator.SproutImportsGenerator;
 import org.AmineSidki.model.EntityMetadata;
 import org.AmineSidki.model.FieldMetadata;
 import org.AmineSidki.model.HelperMetadata;
@@ -11,9 +11,9 @@ import org.AmineSidki.util.ParserUtil;
 import java.util.HashSet;
 import java.util.Map;
 
-public class MapperImportGenerator implements SproutImportGenerator {
+public class MapperImportsGenerator implements SproutImportsGenerator {
     @Override
-    public HashSet<String> generate(EntityMetadata entityMetadata, Map<String, EntityMetadata> pm, Map<String, HelperMetadata> hm) {
+    public HashSet<String> generate(EntityMetadata entityMetadata, Map<String, EntityMetadata> persistenceMap , Map<String, HelperMetadata> helperMap ){
         HashSet<String> imports = new HashSet<>();
 
         for(FieldMetadata fm : entityMetadata.fields()){
@@ -32,7 +32,7 @@ public class MapperImportGenerator implements SproutImportGenerator {
                 }
 
                 //check if the type is an entity
-                EntityMetadata entity = pm.get(fieldType.getRegularName());
+                EntityMetadata entity = persistenceMap.get(fieldType.getRegularName());
 
                 if(entity != null){
                     if((!entity.id().type().getFullQualifiedName().startsWith("java.lang.")
@@ -40,10 +40,11 @@ public class MapperImportGenerator implements SproutImportGenerator {
                         imports.add(entity.id().type().getFullQualifiedName());
                     }
 
+                    imports.add(entity.packageName() + ".entity." +entity.className());
                     imports.add(entity.packageName() + ".repository." + entity.className() + "Repository");
                 }else{
                     //if it isn't an entity then it must be a helper
-                    HelperMetadata helper = hm.get(fieldType.getRegularName());
+                    HelperMetadata helper = helperMap.get(fieldType.getRegularName());
                     if(helper == null){
                         imports.add(fieldType.getFullQualifiedName());
                         continue;
@@ -52,8 +53,8 @@ public class MapperImportGenerator implements SproutImportGenerator {
                 }
             }else{
                 // check if their type needs to be imported
-                if(pm.get(fieldType.getRegularName()) == null
-                        && hm.get(fieldType.getRegularName()) == null
+                if(persistenceMap.get(fieldType.getRegularName()) == null
+                        && helperMap.get(fieldType.getRegularName()) == null
                         && (!fieldType.getFullQualifiedName().startsWith("java.lang.")
                         || fieldType.getFullQualifiedName().substring(10).contains("."))){
                     //if they are neither an entity nor a helper class, they are outside the package and need to be imported

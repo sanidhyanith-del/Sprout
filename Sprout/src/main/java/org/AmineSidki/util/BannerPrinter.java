@@ -15,7 +15,7 @@ public class BannerPrinter {
     public static void print() {
         String coloredBanner = CommandLine.Help.Ansi.AUTO.string(
                 "@|green " + SPROUT_BANNER + "|@\n" +
-                        "@|faint   :: Sprout ::|@            @|yellow (v1.2-MVP)|@\n"
+                        "@|faint   :: Sprout ::|@            @|yellow (v1.3-MVP)|@\n"
         );
 
         System.out.println();
