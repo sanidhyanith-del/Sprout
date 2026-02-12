@@ -15,10 +15,7 @@ import org.AmineSidki.exception.FileSystemException;
 import org.AmineSidki.exception.NotAnEntityException;
 import org.AmineSidki.exception.ParsingException;
 import org.AmineSidki.generator.DependencyGenerator.MapperDependencyGenerator;
-import org.AmineSidki.generator.FileGenerator.DtoGenerator;
-import org.AmineSidki.generator.FileGenerator.MapperGenerator;
-import org.AmineSidki.generator.FileGenerator.RepositoryGenerator;
-import org.AmineSidki.generator.FileGenerator.ServiceGenerator;
+import org.AmineSidki.generator.FileGenerator.*;
 import org.AmineSidki.generator.ImportsGenerator.DtoImportsGenerator;
 import org.AmineSidki.generator.ImportsGenerator.GenericImportsGenerator;
 import org.AmineSidki.generator.ImportsGenerator.MapperImportsGenerator;
@@ -146,6 +143,7 @@ public class DefaultRunnable implements Runnable{
         DtoGenerator dtoGen = new DtoGenerator(dtoImportsGen, emm , hmm);
         MapperGenerator mapperGen = new MapperGenerator(mapperImportGen , mapperDependencyGen, emm, hmm);
         ServiceGenerator serviceGen = new ServiceGenerator(genericImportsGenerator, emm, hmm);
+        ControllerGenerator controllerGen = new ControllerGenerator(genericImportsGenerator, emm, hmm);
 
         System.out.println(CommandLine.Help.Ansi.AUTO.string("@|bold \nPass 3/3 : Generating classes |@ \n"));
 
@@ -162,6 +160,8 @@ public class DefaultRunnable implements Runnable{
                 System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating Mapper for " + em.className()));
                 serviceGen.generate(em , serviceMustache , defaultDir);
                 System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating Service for " + em.className()));
+                controllerGen.generate(em , serviceMustache , defaultDir);
+                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating Controller for " + em.className()));
 
             } catch (IOException e) {
                 throw new FileSystemException("");
