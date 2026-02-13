@@ -1,16 +1,16 @@
 # 🌱 Sprout
 
-Sprout is a lightweight, opinionated **CLI tool** designed to scaffold **Spring Boot layers** (Repositories, Services, DTOs) directly from your **JPA entities**.
+Sprout is a lightweight, opinionated **CLI tool** designed to scaffold **Spring Boot layers** (Repositories, Services, DTOs, Mappers, Controllers) directly from your **JPA entities**.
 
 By parsing your source code **AST**, Sprout automates the repetitive boilerplate required by a classic layered architecture — without relying on compiled classes or reflection.
 
 ## Key Features
 
+- Project directory and package resolution
 - Java code parsing (source → AST)
-- Entity vs. Helper class detection
-- Context gathering
+- Context gathering and type resolving
 - Templating (Using mustache)
-- Extensibility (**`SproutParser`** , **`SproutGenerator`**)
+- Extensibility (**`SproutParser`** , **`SproutFileGenerator`** , **`SproutImportsGenerator`** , **`SproutDependencyGenerator`**)
 
 ## 🛠 Installation & Setup
 
@@ -65,11 +65,11 @@ java -jar Sprout-*.*.jar -d "/path/to/my-spring-project"
     Output: com.example.project.repository
     ```
     
-- **Mandatory `@Id` Annotation**
+- **Mandatory `@Id` Annotation for entities**
     
     Sprout scans for the `@Id` annotation to determine the generic type of `JpaRepository`.
     
-    - If an entity **does not** declare an `@Id`, it will be **skipped**.
+    - If an entity **does not** declare an `@Id`, it will be accounted for as a _Helper Class_.
     - if a class figures in the package and isn’t annotated with `@Entity` it will be accounted for as a helper class
     - A warning message will be displayed.
 - **Directory Mapping Assumptions**
@@ -91,19 +91,16 @@ java -jar Sprout-*.*.jar -d "/path/to/my-spring-project"
 
 - [x]  Repository layer — Full JPA interface generation
 - [x]  Service layer — CRUD business logic scaffolding
-- [ ]  Controller layer — Exposing routes
-- [ ]  Exception handling — generating custom exceptions
+- [x]  Controller layer — Exposing routes
+- [x]  Exception handling — generating custom exceptions
 - [x]  DTO generation — Request / Response object mapping
 - [x]  Multiplicity support — `@OneToMany`, `@ManyToOne`, `@OneToOne`, `@ManyToMany` handling
 - [x]  Context gathering — Making sure all classes in the project know of the others
 - [x]  Dynamic dependency assigning
 - [x]  Dynamic imports generation
 - [x]  Parsing parallelizations — Using multithreading to accelerate java parsing
-- [ ]  `@Incremental` for services to indicate if following code generations should create new implementations
 - [ ]  Make the generated service an interface with its implementation for more modularity
-- [ ]  `@DtoIgnore`, `@RecordDto` — Using annotations to further customize the DTO layer generation
-- [ ]  Accounting for `@JsonIgnore`
-- [ ]  Custom configuration — De-coupling the program from the pre-defined project structure
+- [ ]  Accounting for `@JsonIgnore` and `FetchType.LAZY`
 - [x]  Path resolution — Mapping to `src/main/java` directory trees
 
 ## 🤝 Contributing
@@ -128,7 +125,3 @@ java -jar Sprout-*.*.jar -d "/path/to/my-spring-project"
     3. Commit your changes
     4. Push to the branch
     5. Open a Pull Request
-
-## 📄 License
-
-Distributed under the **MIT License**. See `LICENSE` for details.

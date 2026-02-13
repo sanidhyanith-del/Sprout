@@ -89,6 +89,7 @@ public class DefaultRunnable implements Runnable{
         Mustache dtoMustache = mf.compile("templates/DtoTemplate.mustache");
         Mustache mapperMustache = mf.compile("templates/MapperTemplate.mustache");
         Mustache controllerMustache = mf.compile("templates/ControllerTemplate.mustache");
+        Mustache exceptionMustache = mf.compile("templates/ExceptionTemplate.mustache");
 
         System.out.println(CommandLine.Help.Ansi.AUTO.string("@|bold Pass 2/3 : Parsing Java |@ \n"));
 
@@ -145,6 +146,7 @@ public class DefaultRunnable implements Runnable{
         MapperGenerator mapperGen = new MapperGenerator(mapperImportGen , mapperDependencyGen, emm, hmm);
         ServiceGenerator serviceGen = new ServiceGenerator(genericImportsGenerator, emm, hmm);
         ControllerGenerator controllerGen = new ControllerGenerator(genericImportsGenerator, emm, hmm);
+        ExceptionGenerator exceptionGen = new ExceptionGenerator();
 
         System.out.println(CommandLine.Help.Ansi.AUTO.string("@|bold \nPass 3/3 : Generating classes |@ \n"));
 
@@ -154,15 +156,17 @@ public class DefaultRunnable implements Runnable{
 
             try {
                 repoGen.generate(em , repoMustache , defaultDir);
-                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating Repository for " + em.className()));
+                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating repository for " + em.className()));
                 dtoGen.generate(em , dtoMustache , defaultDir);
                 System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating DTO for " + em.className()));
                 mapperGen.generate(em , mapperMustache , defaultDir);
-                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating Mapper for " + em.className()));
+                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating mapper for " + em.className()));
                 serviceGen.generate(em , serviceMustache , defaultDir);
-                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating Service for " + em.className()));
+                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating service for " + em.className()));
                 controllerGen.generate(em , controllerMustache , defaultDir);
-                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating Controller for " + em.className()));
+                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating controller for " + em.className()));
+                exceptionGen.generate(em , exceptionMustache , defaultDir);
+                System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Generating custom exception for " + em.className()));
 
             } catch (IOException e) {
                 throw new FileSystemException("");
