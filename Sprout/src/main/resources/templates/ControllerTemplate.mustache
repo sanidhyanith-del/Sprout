@@ -3,6 +3,7 @@ package {{PackageName}}.controller;
 import {{PackageName}}.dto.{{ClassName}}DTO;
 import {{PackageName}}.service.{{ClassName}}Service;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,12 +29,12 @@ public class {{ClassName}}Controller{
     }
 
     @PostMapping("/")
-    public {{ClassName}}DTO save(@RequestBody {{ClassName}}DTO dto) {
+    public {{ClassName}}DTO save(@Valid @RequestBody {{ClassName}}DTO dto) {
         return {{className}}Service.save(dto);
     }
 
     @PutMapping("/")
-    public {{ClassName}}DTO update(@RequestBody {{ClassName}}DTO dto) {
+    public {{ClassName}}DTO update(@Valid @RequestBody {{ClassName}}DTO dto) {
         return {{className}}Service.update(dto);
     }
 
