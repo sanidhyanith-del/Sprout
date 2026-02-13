@@ -15,26 +15,31 @@ import {{.}};
 @RestController
 @RequestMapping("/api/{{className}}")
 public class {{ClassName}}Controller{
-    private final {{ClassName}}Service service;
+    private final {{ClassName}}Service {{className}}Service;
 
-    @GetMapping("/getAll")
+    @GetMapping("/")
     public List<{{ClassName}}DTO> getAll() {
-        return service.findAll();
+        return {{className}}Service.findAll();
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/{id}")
     public {{ClassName}}DTO getById(@PathVariable {{IdType}} id) {
-        return service.findById(id);
+        return {{className}}Service.findById(id);
     }
 
-    @PostMapping("/save")
+    @PostMapping("/")
     public {{ClassName}}DTO save(@RequestBody {{ClassName}}DTO dto) {
-        return service.save(dto);
+        return {{className}}Service.save(dto);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @PutMapping("/")
+    public {{ClassName}}DTO update(@RequestBody {{ClassName}}DTO dto) {
+        return {{className}}Service.update(dto);
+    }
+
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable {{IdType}} id) {
-        service.delete(id);
+        {{className}}Service.delete(id);
     }
 }
 

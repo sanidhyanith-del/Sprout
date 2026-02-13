@@ -40,7 +40,9 @@ public class ServiceGenerator implements SproutFileGenerator {
             serviceContext.put("Imports" , genericImportsGenerator.generate(entityMetadata, em, hm));
             serviceContext.put("PackageName", entityMetadata.packageName());
             serviceContext.put("ClassName", entityMetadata.className());
+            serviceContext.put("className", entityMetadata.className().substring(0,1).toLowerCase() + entityMetadata.className().substring(1));
             serviceContext.put("IdType", entityMetadata.id().type().getRegularName());
+            serviceContext.put("Id", entityMetadata.id().name());
             mustache.execute(writer, serviceContext);
         }
     }
