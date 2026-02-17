@@ -1,8 +1,9 @@
-package org.AmineSidki.generator;
+package org.AmineSidki.handler;
 
 import com.github.mustachejava.Mustache;
 import lombok.RequiredArgsConstructor;
 import org.AmineSidki.exception.FileSystemException;
+import org.AmineSidki.generator.SproutFileGenerator;
 import org.AmineSidki.model.EntityMetadata;
 import picocli.CommandLine;
 
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class GenerationScheduler {
+public class GenerationHandler {
     private final String defaultDir;
     private final Map<String, EntityMetadata> emm;
 
@@ -29,7 +30,7 @@ public class GenerationScheduler {
             try {
                 for(GeneratorView gen : generatorList){
                     gen.generator().generate(em , gen.mustache(), defaultDir);
-                    System.out.println(gen.generationMessage());
+                    System.out.println(gen.generationMessage() + em.className());
                 }
             } catch (IOException e) {
                 throw new FileSystemException("");

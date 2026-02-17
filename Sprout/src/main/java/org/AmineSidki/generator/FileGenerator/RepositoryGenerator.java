@@ -24,12 +24,12 @@ public class RepositoryGenerator implements SproutFileGenerator {
     @Override
     public void generate(EntityMetadata entityMetadata, Mustache mustache , String defDir) throws IOException , FileSystemException{
         //Create the Repository package if it doesn't exist yet
-        File repoPackage = new File(defDir + "/repository");
+        File repoPackage = new File(defDir + File.separator +"repository");
         if(!repoPackage.exists() && !repoPackage.mkdir()){
             throw new FileSystemException("");
         }
 
-        File repoFile = new File(defDir + "/repository/" + entityMetadata.className() + "Repository.java");
+        File repoFile = new File(defDir + File.separator +"repository"+ File.separator + entityMetadata.className() + "Repository.java");
 
         if(!repoFile.exists() && !repoFile.createNewFile()){
             throw new FileSystemException("");

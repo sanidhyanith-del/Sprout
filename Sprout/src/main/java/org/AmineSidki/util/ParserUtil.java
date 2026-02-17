@@ -3,6 +3,7 @@ package org.AmineSidki.util;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AnnotationExpr;
@@ -10,14 +11,32 @@ import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.types.ResolvedType;
 import org.AmineSidki.enumeration.Association;
+import org.AmineSidki.exception.NotAnEntityException;
 import org.AmineSidki.model.*;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ParserUtil {
+    public static boolean isEntity(CompilationUnit cu , String entity){
+        ClassOrInterfaceDeclaration classDeclaration = cu.getClassByName(entity
+                .substring(0 , entity.lastIndexOf(".java"))).orElse(null);
+
+        if(classDeclaration == null){
+            return false;
+        }
+
+        Object nullable = classDeclaration
+                                .getAnnotations().stream().filter(f -> f.getNameAsString().equals("Entity"))
+                                .findFirst()
+                                .orElse(null);
+
+        return nullable != null;
+    }
+
     public static String getPackageName(String entityPackageName) {
         if (entityPackageName.endsWith(".entity")) {
             return entityPackageName.substring(0, entityPackageName.lastIndexOf(".entity"));

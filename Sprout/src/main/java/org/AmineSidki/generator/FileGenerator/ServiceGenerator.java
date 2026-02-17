@@ -23,12 +23,12 @@ public class ServiceGenerator implements SproutFileGenerator {
 
     public void generate(EntityMetadata entityMetadata, Mustache mustache , String defDir) throws IOException ,  FileSystemException {
         //Create the Service package if it doesn't exist yet
-        File servicePackage = new File(defDir + "/service");
+        File servicePackage = new File(defDir + File.separator +"service");
         if(!servicePackage.exists() && !servicePackage.mkdir()){
             throw new FileSystemException("");
         }
 
-        File serviceFile = new File(defDir + "/service/" + entityMetadata.className() + "Service.java");
+        File serviceFile = new File(defDir + File.separator +"service"+ File.separator + entityMetadata.className() + "Service.java");
 
         if(!serviceFile.exists() && !serviceFile.createNewFile()){
             throw new FileSystemException("");

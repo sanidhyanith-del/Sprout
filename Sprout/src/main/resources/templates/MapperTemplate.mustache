@@ -30,7 +30,7 @@ public abstract class {{ClassName}}Mapper {
         if(id{{#multiple}}s{{/multiple}} == null){
             return null;
         }
-        return {{field.type.regularName}}Repo.find{{#multiple}}All{{/multiple}}ById(id{{#multiple}}s{{/multiple}}){{^multiple}}.orElse(null){{/multiple}};
+            return {{field.type.regularName}}Repo.find{{#multiple}}All{{/multiple}}ById(id{{#multiple}}s{{/multiple}}){{^multiple}}.orElse(null){{/multiple}};
     }
 
     public {{#multiple}}List<{{/multiple}}{{id.type.regularName}}{{#multiple}}>{{/multiple}} map{{className}}{{#multiple}}s{{/multiple}}ToId{{#multiple}}s{{/multiple}}({{#multiple}}List<{{/multiple}}{{className}}{{#multiple}}>{{/multiple}} entit{{^multiple}}y{{/multiple}}{{#multiple}}ies{{/multiple}}){

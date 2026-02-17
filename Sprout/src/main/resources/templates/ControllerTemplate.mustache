@@ -18,7 +18,7 @@ import {{.}};
 public class {{ClassName}}Controller{
     private final {{ClassName}}Service {{className}}Service;
 
-    @GetMapping("/")
+    @GetMapping
     public List<{{ClassName}}DTO> getAll() {
         return {{className}}Service.findAll();
     }
@@ -28,12 +28,12 @@ public class {{ClassName}}Controller{
         return {{className}}Service.findById(id);
     }
 
-    @PostMapping("/")
+    @PostMapping
     public {{ClassName}}DTO save(@Valid @RequestBody {{ClassName}}DTO dto) {
         return {{className}}Service.save(dto);
     }
 
-    @PutMapping("/")
+    @PutMapping
     public {{ClassName}}DTO update(@Valid @RequestBody {{ClassName}}DTO dto) {
         return {{className}}Service.update(dto);
     }
