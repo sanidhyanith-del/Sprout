@@ -6,6 +6,7 @@ import org.AmineSidki.generator.FileGenerator.*;
 import org.AmineSidki.generator.ImportsGenerator.DtoImportsGenerator;
 import org.AmineSidki.generator.ImportsGenerator.GenericImportsGenerator;
 import org.AmineSidki.generator.ImportsGenerator.MapperImportsGenerator;
+import org.AmineSidki.handler.GenerationHandler;
 import org.AmineSidki.model.EntityMetadata;
 import org.AmineSidki.model.HelperMetadata;
 import org.AmineSidki.model.InitializationResources;

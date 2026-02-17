@@ -1,4 +1,4 @@
-package org.AmineSidki.util;
+package org.AmineSidki.handler;
 
 import com.github.mustachejava.Mustache;
 import lombok.RequiredArgsConstructor;

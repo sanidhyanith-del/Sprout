@@ -1,14 +1,12 @@
 package org.AmineSidki.runnable;
 
 import com.github.javaparser.JavaParser;
-import com.github.mustachejava.DefaultMustacheFactory;
-import com.github.mustachejava.Mustache;
-import com.github.mustachejava.MustacheFactory;
 import org.AmineSidki.exception.FileSystemException;
+import org.AmineSidki.handler.GenerationHandler;
+import org.AmineSidki.handler.ParsingHandler;
 import org.AmineSidki.util.*;
 import org.AmineSidki.model.EntityMetadata;
 import org.AmineSidki.model.HelperMetadata;
-import org.AmineSidki.model.InitializationResources;
 import org.AmineSidki.model.PartialGenerationFlags;
 import picocli.CommandLine;
 

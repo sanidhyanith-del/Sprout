@@ -21,12 +21,12 @@ public class ExceptionGenerator implements SproutFileGenerator {
     @Override
     public void generate(EntityMetadata entityMetadata, Mustache mustache, String defDir) throws IOException, FileSystemException {
         //Create the Repository package if it doesn't exist yet
-        File controllerPackage = new File(defDir + "/exception");
+        File controllerPackage = new File(defDir + File.separator + "exception");
         if(!controllerPackage.exists() && !controllerPackage.mkdir()){
             throw new FileSystemException("");
         }
 
-        File controllerFile = new File(defDir + "/exception/" + entityMetadata.className() + "NotFoundException.java");
+        File controllerFile = new File(defDir + File.separator + "exception"+ File.separator + entityMetadata.className() + "NotFoundException.java");
 
         if(!controllerFile.exists() && !controllerFile.createNewFile()){
             throw new FileSystemException("");

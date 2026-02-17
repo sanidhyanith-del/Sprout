@@ -1,4 +1,4 @@
-package org.AmineSidki.util;
+package org.AmineSidki.handler;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
@@ -9,12 +9,12 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSol
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
 import lombok.RequiredArgsConstructor;
-import org.AmineSidki.exception.NotAnEntityException;
 import org.AmineSidki.exception.ParsingException;
 import org.AmineSidki.model.EntityMetadata;
 import org.AmineSidki.model.HelperMetadata;
 import org.AmineSidki.parser.EntityParser;
 import org.AmineSidki.parser.HelperParser;
+import org.AmineSidki.util.ParserUtil;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -53,31 +53,26 @@ public class ParsingHandler {
                         return;
                     }
 
-                    CompilationUnit cu = null;
                     try {
+                        CompilationUnit cu ;
+
                         //Parsing java --> AST
                         ParseResult<CompilationUnit> pr = parser.get().parse(entity);
-                        cu = pr.getResult().orElseThrow(() -> new ParsingException(""));
+                        cu = pr.getResult().orElseThrow(() -> new ParsingException("Java Parsing failed for file :" + entity.getName()));
 
                         //Parsing AST --> EntityMetadata
                         System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Parsing " + entity.getName()));
-                        EntityMetadata em = entityParser.get().parse(cu , entity.getName());
-                        emm.put( em.className() , em);
-
-                    } catch (NotAnEntityException e){
-                        System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,yellow  WARN|@ --- @|magenta [Sprout]|@ : No @Entity annotation in file " + entity.getName()));
-                        try{
-                            if(cu == null){
-                                throw new ParsingException("");
-                            }
-
+                        if(ParserUtil.isEntity(cu, entity.getName())){
+                            EntityMetadata em = entityParser.get().parse(cu , entity.getName());
+                            emm.put(em.className() , em);
+                        }else{
+                            System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,yellow  WARN|@ --- @|magenta [Sprout]|@ : No @Entity annotation in file " + entity.getName()));
                             HelperMetadata hm = helperParser.get().parse(cu , entity.getName());
                             hmm.put(hm.className() , hm);
-                        }catch(ParsingException | FileNotFoundException ee){
-                            System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,red  ERROR|@ --- @|magenta [Sprout]|@ : Parsing failed for file " + entity.getName()));
                         }
                     } catch (ParsingException | FileNotFoundException e){
                         System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,red  ERROR|@ --- @|magenta [Sprout]|@ : Parsing failed for file " + entity.getName()));
+                        e.printStackTrace();
                     }
                 }
         );

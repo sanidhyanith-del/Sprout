@@ -33,12 +33,12 @@ public class MapperGenerator implements SproutFileGenerator {
 
     public void generate( EntityMetadata entityMetadata, Mustache mustache , String defDir) throws IOException , FileSystemException{
         //Create the mapper package if it doesn't exist yet
-        File mapperPackage = new File(defDir + "/mapper");
+        File mapperPackage = new File(defDir + File.separator +"mapper");
         if(!mapperPackage.exists() && !mapperPackage.mkdir()){
             throw new FileSystemException("");
         }
 
-        File mapperFile = new File(defDir + "/mapper/" + entityMetadata.className() + "Mapper.java");
+        File mapperFile = new File(defDir + File.separator +"mapper"+ File.separator + entityMetadata.className() + "Mapper.java");
 
         if(!mapperFile.exists() && !mapperFile.createNewFile()){
             throw new FileSystemException("");

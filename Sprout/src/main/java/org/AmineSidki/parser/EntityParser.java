@@ -2,7 +2,6 @@ package org.AmineSidki.parser;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.resolution.types.ResolvedType;
@@ -17,21 +16,12 @@ import org.AmineSidki.util.ParserUtil;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 public class EntityParser implements SproutParser<EntityMetadata>{
 
     @Override
     public EntityMetadata parse(CompilationUnit cu , String entity) throws FileNotFoundException , ParsingException , NotAnEntityException {
-
-        Optional<ClassOrInterfaceDeclaration> classDeclaration = cu.getClassByName(entity
-                .substring(0 , entity.lastIndexOf(".java")));
-
-        classDeclaration.orElseThrow(() -> new NotAnEntityException(""))
-                .getAnnotations().stream().filter(f -> f.getNameAsString().equals("Entity"))
-                .findFirst()
-                .orElseThrow(() -> new NotAnEntityException(""));
 
         String packageName ,idQualifiedName;
         TypeMetadata idType;

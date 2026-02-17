@@ -31,12 +31,12 @@ public class DtoGenerator implements SproutFileGenerator {
 
     public void generate(EntityMetadata entityMetadata, Mustache mustache, String defDir) throws IOException, FileSystemException {
         //Create dto package if it doesn't exist yet
-        File dtoPackage = new File(defDir + "/dto");
+        File dtoPackage = new File(defDir + File.separator +"dto");
         if (!dtoPackage.exists() && !dtoPackage.mkdir()) {
             throw new FileSystemException("");
         }
 
-        File dtoFile = new File(defDir + "/dto/" + entityMetadata.className() + "DTO.java");
+        File dtoFile = new File(defDir + File.separator +"dto"+ File.separator + entityMetadata.className() + "DTO.java");
 
         if ((!dtoFile.exists() && !dtoFile.createNewFile())) {
             throw new FileSystemException("");
