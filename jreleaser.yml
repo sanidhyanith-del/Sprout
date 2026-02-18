@@ -1,13 +1,15 @@
 project:
   name: sprout
+  # We use a variable so JReleaser pulls the version from your Git Tag automatically
+  version: {{tagName}} 
   description: Sprout CLI scaffolding tool
+  longDescription: Sprout is a CLI tool for rapid project scaffolding.
   links:
     homepage: https://github.com/AmineSidki/sprout-releases
   authors:
     - Amine Sidki
   license: MIT
-  java:
-    version: 17
+  copyright: "2026 Your Name"
 
 release:
   github:
@@ -17,7 +19,8 @@ release:
 
 distributions:
   sprout:
-    type: JLINK
+    # Changed from JLINK to BINARY since Maven already did the heavy lifting
+    type: BINARY
     artifacts:
       - path: Sprout/artifacts/sprout-linux-x86_64.tar.gz
         platform: linux-x86_64
