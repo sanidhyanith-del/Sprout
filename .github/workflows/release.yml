@@ -85,9 +85,8 @@ jobs:
       - name: Run JReleaser
         uses: jreleaser/release-action@v2
         with:
-          # We explicitly tell JReleaser where the config is (-c) 
-          # and tell it to search for the git root (-grs)
-          arguments: full-release -c jreleaser.yml -grs
+          # Changed -grs to --git-root-search
+          arguments: full-release -c jreleaser.yml --git-root-search
           version: '1.13.1'
           setup-java: true 
         env:
