@@ -61,19 +61,18 @@ jobs:
     name: Publish with JReleaser
     needs: build-and-package
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./Sprout
+    # REMOVED defaults/run/working-directory here to keep us at the root
         
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Essential for JReleaser to see tags and history
+          fetch-depth: 0
 
       - name: Download Matrix Artifacts
         uses: actions/download-artifact@v4
         with:
+          # We download them into Sprout/artifacts so they match the jreleaser.yml paths
           path: Sprout/artifacts
           merge-multiple: true
 
@@ -82,7 +81,7 @@ jobs:
         with:
           arguments: full-release
           version: '1.13.1'
-          working-directory: ./Sprout
+          # REMOVED working-directory here to let it find the .git folder automatically
           setup-java: true 
         env:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
