@@ -1,5 +1,10 @@
 project:
   name: sprout
+  
+  # ADD THIS BLOCK: Tells Homebrew exactly which OpenJDK version to fetch
+  java:
+    version: 17
+    
   description: Sprout CLI scaffolding tool
   longDescription: Sprout is a CLI tool for rapid project scaffolding.
   links:
