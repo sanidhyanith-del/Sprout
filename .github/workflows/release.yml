@@ -6,35 +6,13 @@ on:
       - '*'
 
 jobs:
-  build-and-package:
-    name: Build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    # THIS IS THE MAGIC BULLET: Force all 'run' commands to execute inside the Sprout folder
-    defaults:
-      run:
-        working-directory: ./Sprout 
-        
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-            artifact_name: sprout-linux-x86_64.tar.gz
-            ext: tar.gz
-            #Intel mac
-          - os: macos-15-intel
-            artifact_name: sprout-osx-x86_64.zip
-            ext: zip
-            #Arm mac
-          - os: macos-latest
-            artifact_name: sprout-osx-aarch_64.zip
-            ext: zip
-          - os: windows-latest
-            artifact_name: sprout-windows-x86_64.zip
-            ext: zip
-
+  release:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -43,57 +21,15 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Build and jlink via Maven
+      - name: Build and Package
+        # This will now trigger the appassembler and assembly plugins in your pom.xml
         run: mvn clean package -DskipTests
-
-      - name: Rename Linux/macOS Artifact
-        if: matrix.os != 'windows-latest'
-        run: find target -maxdepth 1 -type f -name "*.${{ matrix.ext }}" -exec mv {} target/${{ matrix.artifact_name }} \;
-
-      - name: Rename Windows Artifact
-        if: matrix.os == 'windows-latest'
-        run: Get-ChildItem -Path target -Filter "*.zip" | Rename-Item -NewName "${{ matrix.artifact_name }}"
-
-      - name: Upload OS Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.artifact_name }}
-          # The upload action ignores the working-directory default, so we must explicitly tell it where to look
-          path: Sprout/target/${{ matrix.artifact_name }} 
-          retention-days: 1
-  publish:
-    name: Publish with JReleaser
-    needs: build-and-package
-    runs-on: ubuntu-latest
-    # This override ensures we are NOT in the Sprout subfolder
-    defaults:
-      run:
-        working-directory: . 
-        
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      # Debugging step: This will print the files in the log 
-      # so we can verify jreleaser.yml is actually there.
-      - name: Verify Workspace
-        run: ls -R
-
-      - name: Download Matrix Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: Sprout/artifacts
-          merge-multiple: true
+        working-directory: ./Sprout
 
       - name: Run JReleaser
         uses: jreleaser/release-action@v2
         with:
-          # Changed -grs to --git-root-search
           arguments: full-release -c jreleaser.yml --git-root-search
           version: '1.13.1'
-          setup-java: true 
         env:
-          JRELEASER_GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-          JRELEASER_PROJECT_VERSION: ${{ github.ref_name }}
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

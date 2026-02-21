@@ -1,12 +1,9 @@
 project:
   name: sprout
-  
-  # UPDATE THIS BLOCK
   java:
     version: 17
-    groupId: com.yourdomain.sprout # <-- Put your actual Maven groupId here
+    groupId: org.AmineSidki
     artifactId: sprout
-    
   description: Sprout CLI scaffolding tool
   longDescription: Sprout is a CLI tool for rapid project scaffolding.
   links:
@@ -15,6 +12,7 @@ project:
     - Amine Sidki
   license: MIT
   copyright: "2026 Amine Sidki"
+
 release:
   github:
     owner: AmineSidki
@@ -23,21 +21,15 @@ release:
 
 distributions:
   sprout:
-    # MAGIC KEYWORD: Tells Homebrew & Scoop to manage the JVM for you
     type: JAVA_BINARY 
-    
-    # We define the main executable name inside the zip's bin/ folder
     executable:
       windowsExtension: bat
-    
     artifacts:
-      # ONLY ONE universal zip! No more OS-specific matrices.
-      # This zip should just contain a `bin/sprout` script and a `lib/sprout.jar`
-      - path: target/sprout-{{projectVersion}}.zip 
+      # JReleaser will find this file in Sprout/target/
+      - path: Sprout/target/sprout-{{projectVersion}}.zip 
 
 packagers:
   brew:
-    # We no longer need multiPlatform: true because Java is cross-platform!
     active: ALWAYS
     repository:
       owner: AmineSidki
