@@ -1,6 +1,5 @@
 project:
   name: sprout
-  # We use a variable so JReleaser pulls the version from your Git Tag automatically
   description: Sprout CLI scaffolding tool
   longDescription: Sprout is a CLI tool for rapid project scaffolding.
   links:
@@ -18,21 +17,21 @@ release:
 
 distributions:
   sprout:
-    # Changed from JLINK to BINARY since Maven already did the heavy lifting
-    type: BINARY
+    # MAGIC KEYWORD: Tells Homebrew & Scoop to manage the JVM for you
+    type: JAVA_BINARY 
+    
+    # We define the main executable name inside the zip's bin/ folder
+    executable:
+      windowsExtension: bat
+    
     artifacts:
-      - path: Sprout/artifacts/sprout-linux-x86_64.tar.gz
-        platform: linux-x86_64
-      - path: Sprout/artifacts/sprout-osx-aarch_64.zip
-        platform: osx-aarch_64
-      - path: Sprout/artifacts/sprout-osx-x86_64.zip
-        platform: osx-x86_64
-      - path: Sprout/artifacts/sprout-windows-x86_64.zip
-        platform: windows-x86_64
+      # ONLY ONE universal zip! No more OS-specific matrices.
+      # This zip should just contain a `bin/sprout` script and a `lib/sprout.jar`
+      - path: target/sprout-{{projectVersion}}.zip 
 
 packagers:
   brew:
-    multiPlatform: true
+    # We no longer need multiPlatform: true because Java is cross-platform!
     active: ALWAYS
     repository:
       owner: AmineSidki
