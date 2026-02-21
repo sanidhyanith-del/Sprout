@@ -6,11 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="82a3f064-6201-49bf-a619-bc9831b4ba4a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dependency-reduced-pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/dependency-reduced-pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/AmineSidki/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/AmineSidki/App.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/AmineSidki/runnable/DefaultRunnable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/AmineSidki/runnable/DefaultRunnable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/AmineSidki/util/BannerPrinter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/AmineSidki/util/BannerPrinter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +123,7 @@
       <workItem from="1771457596670" duration="79000" />
       <workItem from="1771466983795" duration="6000" />
       <workItem from="1771491786516" duration="309000" />
-      <workItem from="1771669299751" duration="1814000" />
+      <workItem from="1771669299751" duration="2531000" />
     </task>
     <servers />
   </component>

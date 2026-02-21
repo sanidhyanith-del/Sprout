@@ -1,3 +1,16 @@
-#!/usr/bin/env bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-"$DIR/../jre/bin/java" -jar "$DIR/../lib/sprout.jar" "$@"
+#!/bin/sh
+
+PRG="$0"
+while [ -h "$PRG" ]; do
+  ls=`ls -ld "$PRG"`
+  link=`expr "$ls" : '.*-> \(.*\)$'`
+  if expr "$link" : '/.*' > /dev/null; then
+    PRG="$link"
+  else
+    PRG=`dirname "$PRG"`/"$link"
+  fi
+done
+
+DIR=$(dirname "$PRG")
+
+exec "$DIR/../sprout-jre/bin/java" -jar "$DIR/../lib/Sprout-1.5.jar" "$@"
