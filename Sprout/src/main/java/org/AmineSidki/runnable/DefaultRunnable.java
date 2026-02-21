@@ -15,11 +15,11 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
-@CommandLine.Command(name="default" , version = "1.4.5" , description = "Sprout scaffolding engine")
+@CommandLine.Command(name="default" , description = "Sprout scaffolding engine")
 public class DefaultRunnable implements Runnable{
 
-    @CommandLine.Spec
-    CommandLine.Model.CommandSpec spec;
+    @CommandLine.Option(names="--version")
+    boolean version = false;
 
     @CommandLine.Option(names = "--dir")
     private String defaultDir = ".";
@@ -29,6 +29,12 @@ public class DefaultRunnable implements Runnable{
 
     @Override
     public void run() {
+
+        if(version){
+            new VersionRunnable().run();
+            System.exit(0);
+        }
+
         BannerPrinter.print();
         System.out.println(CommandLine.Help.Ansi.AUTO.string("@|bold Pass 1/3 : Computing project root |@\n"));
 

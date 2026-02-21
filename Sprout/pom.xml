@@ -4,13 +4,20 @@
 
   <groupId>org.AmineSidki</groupId>
   <artifactId>Sprout</artifactId>
-  <version>1.4.5</version>
+  <version>1.5</version>
   <packaging>jar</packaging>
 
   <name>Sprout</name>
   <url>https://maven.apache.org</url>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
