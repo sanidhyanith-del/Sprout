@@ -39,13 +39,13 @@ public class {{ClassName}}Service{
 
     @Transactional
     public {{ClassName}}DTO save({{ClassName}}DTO dto) {
-        {{ClassName}} entity = mapper.toEntity(dto);
+        {{ClassName}} entity = {{className}}mapper.toEntity(dto);
         return {{className}}mapper.toDTO({{className}}repository.save(entity));
     }
 
     @Transactional
     public {{ClassName}}DTO update({{ClassName}}DTO dto) {
-        if (!{{className}}repository.existsById(dto.{{Id}})) {
+        if (!{{className}}repository.existsById(dto.{{Id}}())) {
             throw new {{ClassName}}NotFoundException("Cannot delete: {{ClassName}} not found with id: " + id);
         }
 
