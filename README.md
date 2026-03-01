@@ -44,7 +44,7 @@ scoop install sprout
 ### From source
 
 ```bash
-git clone <your-repo>
+git clone git@github.com:AmineSidki/Sprout.git
 mvn clean package
 ```
 
