@@ -106,6 +106,7 @@ public class MapperGenerator implements SproutFileGenerator {
             mapperContext.put("Dependencies" , dependencies);
             mapperContext.put("PackageName", entityMetadata.packageName());
             mapperContext.put("ClassName", entityMetadata.className());
+            mapperContext.put("hasLightDTO" , entityMetadata.hasLightDTO());
             mapperContext.put("IdType", entityMetadata.id().type().getRegularName());
             mapperContext.put("Fields" , fields);
             mapperContext.put("Associations" , associations);

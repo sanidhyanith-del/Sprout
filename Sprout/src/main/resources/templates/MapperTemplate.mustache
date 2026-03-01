@@ -1,6 +1,9 @@
 package {{PackageName}}.mapper;
 
 import {{PackageName}}.entity.{{ClassName}};
+{{#hasLightDTO}}
+import {{PackageName}}.dto.Light{{ClassName}}DTO;
+{{/hasLightDTO}}
 import {{PackageName}}.dto.{{ClassName}}DTO;
 import org.mapstruct.Mapper;
 
@@ -21,7 +24,9 @@ public abstract class {{ClassName}}Mapper {
 
     //Map to DTO
     public abstract {{ClassName}}DTO toDTO({{ClassName}} entity);
-
+{{#hasLightDTO}}
+    public abstract Light{{ClassName}}DTO toLightDTO({{ClassName}} entity)
+{{/hasLightDTO}}
     //Map to Entity
     public abstract {{ClassName}} toEntity({{ClassName}}DTO dto);
 
