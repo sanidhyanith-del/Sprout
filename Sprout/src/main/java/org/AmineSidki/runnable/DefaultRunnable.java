@@ -18,7 +18,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @CommandLine.Command(name="default" , description = "Sprout scaffolding engine")
 public class DefaultRunnable implements Runnable{
 
-    @CommandLine.Option(names="--version")
+    @CommandLine.Option(names={"--help" , "-h"})
+    boolean help = false;
+
+    @CommandLine.Option(names={"--version" , "-v"})
     boolean version = false;
 
     @CommandLine.Option(names = "--dir")
@@ -29,6 +32,10 @@ public class DefaultRunnable implements Runnable{
 
     @Override
     public void run() {
+        if(help){
+            new HelpRunnable().run();
+            System.exit(0);
+        }
 
         if(version){
             new VersionRunnable().run();

@@ -20,45 +20,45 @@ import {{.}};
 @RequiredArgsConstructor
 @Service
 public class {{ClassName}}Service{
-    private final {{ClassName}}Repository {{className}}repository;
-    private final {{ClassName}}Mapper {{className}}mapper;
+    private final {{ClassName}}Repository {{className}}Repository;
+    private final {{ClassName}}Mapper {{className}}Mapper;
 
     @Transactional(readOnly = true)
     public List<{{ClassName}}DTO> findAll() {
-        return {{className}}repository.findAll().stream()
-                .map({{className}}mapper::toDTO)
+        return {{className}}Repository.findAll().stream()
+                .map({{className}}Mapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public {{ClassName}}DTO findById({{IdType}} id) {
-        return {{className}}repository.findById(id)
-                .map({{className}}mapper::toDTO)
+        return {{className}}Repository.findById(id)
+                .map({{className}}Mapper::toDTO)
                 .orElseThrow(() -> new {{ClassName}}NotFoundException("{{ClassName}} not found with id: " + id));
     }
 
     @Transactional
     public {{ClassName}}DTO save({{ClassName}}DTO dto) {
-        {{ClassName}} entity = {{className}}mapper.toEntity(dto);
-        return {{className}}mapper.toDTO({{className}}repository.save(entity));
+        {{ClassName}} entity = {{className}}Mapper.toEntity(dto);
+        return {{className}}Mapper.toDTO({{className}}Repository.save(entity));
     }
 
     @Transactional
     public {{ClassName}}DTO update({{ClassName}}DTO dto) {
-        if (!{{className}}repository.existsById(dto.{{Id}}())) {
+        if (!{{className}}Repository.existsById(dto.{{Id}}())) {
             throw new {{ClassName}}NotFoundException("Cannot delete: {{ClassName}} not found with id: " + dto.{{Id}}());
         }
 
-        {{ClassName}} entity = {{className}}mapper.toEntity(dto);
-        return {{className}}mapper.toDTO({{className}}repository.save(entity));
+        {{ClassName}} entity = {{className}}Mapper.toEntity(dto);
+        return {{className}}Mapper.toDTO({{className}}Repository.save(entity));
     }
 
     @Transactional
     public void delete({{IdType}} id) {
-        if (!{{className}}repository.existsById(id)) {
+        if (!{{className}}Repository.existsById(id)) {
             throw new {{ClassName}}NotFoundException("Cannot delete: {{ClassName}} not found with id: " + id);
         }
-        {{className}}repository.deleteById(id);
+        {{className}}Repository.deleteById(id);
     }
 }
 

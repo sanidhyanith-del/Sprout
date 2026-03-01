@@ -58,7 +58,7 @@ public class ParsingHandler {
 
                         //Parsing AST --> EntityMetadata
                         System.out.println(CommandLine.Help.Ansi.AUTO.string("@|faint " + LocalDateTime.now() + "|@ @|bold,blue  INFO|@ --- @|magenta [Sprout]|@ : Parsing " + entity.getName()));
-                        if(ParserUtil.isEntity(cu, entity.getName())){
+                        if(ParserUtil.hasAnnotation(cu, entity.getName(), "Entity")){
                             EntityMetadata em = entityParser.get().parse(cu , entity.getName());
                             emm.put(em.className() , em);
                         }else{

@@ -18,7 +18,7 @@ import java.io.File;
 import java.util.*;
 
 public class ParserUtil {
-    public static boolean isEntity(CompilationUnit cu , String entity){
+    public static boolean hasAnnotation(CompilationUnit cu , String entity, String annotation){
         ClassOrInterfaceDeclaration classDeclaration = cu.getClassByName(entity
                 .substring(0 , entity.lastIndexOf(".java"))).orElse(null);
 
@@ -27,7 +27,7 @@ public class ParserUtil {
         }
 
         Object nullable = classDeclaration
-                                .getAnnotations().stream().filter(f -> f.getNameAsString().equals("Entity"))
+                                .getAnnotations().stream().filter(f -> f.getNameAsString().equals(annotation))
                                 .findFirst()
                                 .orElse(null);
 
@@ -47,20 +47,13 @@ public class ParserUtil {
 
         for(AnnotationExpr a : fd.getAnnotations())
             if(annotations.contains(a.getNameAsString())){
-                switch (a.getNameAsString()) {
-                    case "OneToOne":
-                        association = Association.ONE_TO_ONE;
-                        break;
-                    case "OneToMany":
-                        association = Association.ONE_TO_MANY;
-                        break;
-                    case "ManyToOne":
-                        association = Association.MANY_TO_ONE;
-                        break;
-                    case "ManyToMany":
-                        association = Association.MANY_TO_MANY;
-                        break;
-                }
+                association = switch (a.getNameAsString()) {
+                    case "OneToOne" -> Association.ONE_TO_ONE;
+                    case "OneToMany" -> Association.ONE_TO_MANY;
+                    case "ManyToOne" -> Association.MANY_TO_ONE;
+                    case "ManyToMany" -> Association.MANY_TO_MANY;
+                    default -> association;
+                };
             }
 
         List<FieldMetadata> lfm = new ArrayList<>();
@@ -136,10 +129,10 @@ public class ParserUtil {
     }
 
     //Adapts fields with associations into their Java counterpart
-    public static List<FieldMetadata> mapToDtoField(EntityMetadata em , Map<String , EntityMetadata> persistenceMap , Map<String , HelperMetadata> helperMap){
+    public static List<FieldMetadata> mapToDtoField(List<FieldMetadata> fmList , Map<String , EntityMetadata> persistenceMap , Map<String , HelperMetadata> helperMap){
         List<FieldMetadata> output = new ArrayList<>();
 
-        for(FieldMetadata fm : em.fields()){
+        for(FieldMetadata fm : fmList){
             FieldMetadata f = fm;
             if (!fm.association().equals(Association.DEFAULT)) {
                 TypeMetadata idType ;

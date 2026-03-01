@@ -15,7 +15,9 @@ import org.AmineSidki.util.ParserUtil;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class EntityParser implements SproutParser<EntityMetadata>{
 
@@ -26,6 +28,7 @@ public class EntityParser implements SproutParser<EntityMetadata>{
         TypeMetadata idType;
 
         List<FieldMetadata> fields = new ArrayList<>();
+        List<FieldMetadata> lightFields = new ArrayList<>();
 
         //Get the full Package name: com.example.packageName.etc.entity
         packageName = ParserUtil.getPackageName(cu.getPackageDeclaration()
@@ -38,6 +41,21 @@ public class EntityParser implements SproutParser<EntityMetadata>{
                 .filter(f -> f.isAnnotationPresent("Id"))
                 .findFirst()
                 .orElseThrow(() -> new ParsingException("No @Id Annotation present in supposed entity "+ entity + "."));
+
+        //Check for @SproutLightDTO
+        boolean lightDTO = ParserUtil.hasAnnotation(cu, entity, "SproutLightDTO");
+
+        //Check for @SproutPaginated
+        boolean paginated = ParserUtil.hasAnnotation(cu, entity, "SproutPaginated");
+
+        //I honestly don't like this one since, if not used correctly, it will produce non-functional code.
+        //Check for @SproutIgnore : Parses and accounts for entity in the Context, but doesn't generate any code for it. it basically acts as a Helper with additional data
+        boolean ignored = ParserUtil.hasAnnotation(cu, entity, "SproutIgnore");
+
+        //Check for @SproutLDF : Sprout Large data field, excludes annotated fields from generation in the LightDTO
+        Set<FieldDeclaration> lightFieldsDeclaration = fdList.stream()
+                .filter(f -> (!f.isAnnotationPresent("SproutLDF")))
+                .collect(Collectors.toSet());;
 
         try{
             ResolvedType idResolved = idFd.getVariable(0).getType().resolve();
@@ -58,9 +76,15 @@ public class EntityParser implements SproutParser<EntityMetadata>{
         idType = new TypeMetadata(idFd.getElementType().toString() , idQualifiedName);
         FieldMetadata idField = new FieldMetadata(idType , idFd.getVariable(0).getNameAsString() , Association.DEFAULT);
 
-        fdList.forEach(f -> fields.addAll(ParserUtil.getFieldMetadata(f)));
+        fdList.forEach(f -> {
+            List<FieldMetadata> extractedFields = ParserUtil.getFieldMetadata(f);
+            fields.addAll(extractedFields);
+            if(lightFieldsDeclaration.contains(f)){
+                lightFields.addAll(extractedFields);
+            }
+        });
 
         String className = entity.replaceAll(Pattern.quote(".java") , "");
-        return new EntityMetadata(packageName , className , idField , fields);
+        return new EntityMetadata(packageName , className , idField , lightDTO , paginated , ignored , lightFields , fields);
     }
 }

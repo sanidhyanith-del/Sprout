@@ -36,15 +36,24 @@ public class DtoGenerator implements SproutFileGenerator {
             throw new FileSystemException("");
         }
 
+        File lightDtoFile = null;
         File dtoFile = new File(defDir + File.separator +"dto"+ File.separator + entityMetadata.className() + "DTO.java");
 
         if ((!dtoFile.exists() && !dtoFile.createNewFile())) {
             throw new FileSystemException("");
         }
 
-        List <FieldMetadata> fields = ParserUtil.mapToDtoField(entityMetadata , persistenceMetadata, helperMetadata);
+        if(entityMetadata.hasLightDTO()){
+            lightDtoFile = new File(defDir + File.separator +"dto"+ File.separator + "Light" + entityMetadata.className() + "DTO.java");
+            if(!lightDtoFile.exists() && !lightDtoFile.createNewFile()){
+                throw new FileSystemException("");
+            }
+        }
+
+        List <FieldMetadata> fields = ParserUtil.mapToDtoField(entityMetadata.fields() , persistenceMetadata, helperMetadata);
 
 
+        //Generating regular DTO
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(dtoFile))) {
             HashMap <String,Object> dtoContext = new HashMap <>();
 
@@ -59,6 +68,27 @@ public class DtoGenerator implements SproutFileGenerator {
                     .toList());
 
             mustache.execute(writer, dtoContext);
+        }
+
+        //In case of light DTO, generate light DTO too
+        if(entityMetadata.hasLightDTO()){
+            List<FieldMetadata> lightFields = ParserUtil.mapToDtoField(entityMetadata.lightFields(), persistenceMetadata, helperMetadata);
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(lightDtoFile))) {
+                HashMap <String,Object> dtoContext = new HashMap <>();
+
+                HashSet<String> imports = dtoImportsGenerator.generate(entityMetadata, persistenceMetadata, helperMetadata);
+
+                dtoContext.put("Imports" , imports);
+                dtoContext.put("PackageName", entityMetadata.packageName());
+                dtoContext.put("ClassName", entityMetadata.className());
+                dtoContext.put("IdType", entityMetadata.id().type().getRegularName());
+                dtoContext.put("Fields", lightFields.stream()
+                        .map(f -> new RecordFieldView(f, f == lightFields.get(lightFields.size() - 1)))
+                        .toList());
+
+                mustache.execute(writer, dtoContext);
+            }
         }
     }
 }
