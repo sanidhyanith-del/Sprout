@@ -1,4 +1,4 @@
-package org.AmineSidki.test.entity;
+package org.aminesidki.test.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

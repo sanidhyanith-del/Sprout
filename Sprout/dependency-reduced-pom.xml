@@ -41,7 +41,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>org.AmineSidki.App</mainClass>
+                  <mainClass>org.aminesidki.App</mainClass>
                 </transformer>
               </transformers>
             </configuration>
@@ -64,7 +64,7 @@
           <repositoryName>lib</repositoryName>
           <programs>
             <program>
-              <mainClass>org.AmineSidki.App</mainClass>
+              <mainClass>org.aminesidki.App</mainClass>
               <id>sprout</id>
             </program>
           </programs>
