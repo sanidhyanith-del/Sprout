@@ -2,6 +2,9 @@ package org.aminesidki.util;
 
 import picocli.CommandLine;
 
+/**
+ * Static utility that prints the application's banner
+ */
 public class BannerPrinter {
 
     private static final String SPROUT_BANNER =

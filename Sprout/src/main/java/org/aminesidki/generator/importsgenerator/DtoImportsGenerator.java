@@ -11,6 +11,9 @@ import org.aminesidki.util.ParserUtil;
 import java.util.HashSet;
 import java.util.Map;
 
+/**
+ * Specific <code>SproutImportsGenerator</code> implementation for dto files
+ */
 public class DtoImportsGenerator implements SproutImportsGenerator {
     @Override
     public HashSet<String> generate(EntityMetadata entityMetadata, Map<String, EntityMetadata> pm, Map<String, HelperMetadata> hm) {

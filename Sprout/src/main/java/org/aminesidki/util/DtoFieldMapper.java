@@ -10,8 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Static utility that is responsible for mapping fields with associations into collections, or keeping them
+ */
 public class DtoFieldMapper {
-    //Adapts fields with associations into their Java counterpart
     public static List<FieldMetadata> mapToDtoField(List<FieldMetadata> fmList , Map<String , EntityMetadata> persistenceMap , Map<String , HelperMetadata> helperMap){
         List<FieldMetadata> output = new ArrayList<>();
 

@@ -3,6 +3,9 @@ package org.aminesidki.util;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * Retrieves the program's version out of the <code>pom.xml</code>
+ */
 public class VersionUtil {
     public final static String version = getVersion();
 

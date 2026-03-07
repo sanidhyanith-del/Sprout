@@ -11,6 +11,9 @@ import org.aminesidki.util.ParserUtil;
 import java.util.HashSet;
 import java.util.Map;
 
+/**
+ * Specific <code>SproutImportsGenerator</code> implementation for mapper files
+ */
 public class MapperImportsGenerator implements SproutImportsGenerator {
     @Override
     public HashSet<String> generate(EntityMetadata entityMetadata, Map<String, EntityMetadata> persistenceMap , Map<String, HelperMetadata> helperMap ){

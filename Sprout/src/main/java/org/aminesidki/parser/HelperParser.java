@@ -9,6 +9,9 @@ import org.aminesidki.util.ParserUtil;
 import java.io.FileNotFoundException;
 import java.util.regex.Pattern;
 
+/**
+ * Specific helper class parsing implementation for <code>SproutParser</code> interface
+ */
 public class HelperParser implements SproutParser<HelperMetadata>{
 
     @Override

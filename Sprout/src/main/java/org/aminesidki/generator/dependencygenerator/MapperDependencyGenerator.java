@@ -7,6 +7,9 @@ import org.aminesidki.util.ParserUtil;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Specific <code>SproutDependencyGenerator</code> implementation for mapper files
+ */
 public class MapperDependencyGenerator implements SproutDependencyGenerator {
     public HashSet<String> generate(EntityMetadata entity, Set<String> imports){
         HashSet<String> dependencies = new HashSet<>();

@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Specific implementation for controller classes generation of the <code>SproutFileGenerator</code>
+ */
 @RequiredArgsConstructor
 public class ControllerGenerator implements SproutFileGenerator {
     private final GenericImportsGenerator genericImportsGenerator;

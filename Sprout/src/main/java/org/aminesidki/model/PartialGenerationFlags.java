@@ -2,6 +2,7 @@ package org.aminesidki.model;
 
 import picocli.CommandLine;
 
+
 public class PartialGenerationFlags {
     @CommandLine.Option(names = {"-p" , "--partial"}, required = true, description = "Partial generation")
     public boolean pFlag;

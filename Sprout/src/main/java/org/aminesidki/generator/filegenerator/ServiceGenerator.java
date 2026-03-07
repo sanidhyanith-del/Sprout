@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Specific implementation for service classes generation of the <code>SproutFileGenerator</code>
+ */
 @RequiredArgsConstructor
 public class ServiceGenerator implements SproutFileGenerator {
     private final GenericImportsGenerator genericImportsGenerator;

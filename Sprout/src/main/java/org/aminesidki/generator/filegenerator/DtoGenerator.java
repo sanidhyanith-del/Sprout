@@ -19,6 +19,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Specific implementation for dto classes generation of the <code>SproutFileGenerator</code>
+ */
 @RequiredArgsConstructor
 public class DtoGenerator implements SproutFileGenerator {
     private final DtoImportsGenerator dtoImportsGenerator;

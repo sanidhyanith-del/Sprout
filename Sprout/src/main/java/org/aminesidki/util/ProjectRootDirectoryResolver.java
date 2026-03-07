@@ -9,6 +9,9 @@ import org.aminesidki.exception.FileSystemException;
 import java.io.File;
 import java.util.Arrays;
 
+/**
+ * Resolves the project's root directory to enable <code>JavaParser</code>'s type resolving
+ */
 public class ProjectRootDirectoryResolver {
     public static File calculateProjectRootDirectory(File[] files , JavaParser parser){
         try{

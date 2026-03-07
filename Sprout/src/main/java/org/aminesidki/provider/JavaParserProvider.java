@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 
+/**
+ * Specific JavaParser implementation of the <code>SproutProvider</code> interface
+ */
 @RequiredArgsConstructor
 public class JavaParserProvider implements SproutProvider<JavaParser>{
     private final File calculatedRootString;

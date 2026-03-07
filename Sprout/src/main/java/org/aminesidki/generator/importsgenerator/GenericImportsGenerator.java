@@ -8,6 +8,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 
+/**
+ * Generic implementation for <code>SproutImportsGenerator</code>
+ */
 public class GenericImportsGenerator implements SproutImportsGenerator {
 
     @Override

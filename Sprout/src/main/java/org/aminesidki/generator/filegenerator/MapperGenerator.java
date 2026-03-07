@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Specific implementation for mapper classes generation of the <code>SproutFileGenerator</code>
+ */
 @RequiredArgsConstructor
 public class MapperGenerator implements SproutFileGenerator {
     private final MapperImportsGenerator mapperImportsGenerator;

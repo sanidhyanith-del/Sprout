@@ -6,6 +6,9 @@ import com.github.mustachejava.MustacheFactory;
 import org.aminesidki.model.InitializationResources;
 import org.aminesidki.model.PartialGenerationFlags;
 
+/**
+ * Maps resources properly depending on the given flags
+ */
 public class InitializationResourcesMapper {
     public InitializationResources map(PartialGenerationFlags pGroup){
         MustacheFactory mf = new DefaultMustacheFactory();

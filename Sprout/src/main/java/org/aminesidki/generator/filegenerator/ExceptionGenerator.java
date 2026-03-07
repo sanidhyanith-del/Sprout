@@ -12,6 +12,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 
+/**
+ * Specific implementation for exception classes generation of the <code>SproutFileGenerator</code>
+ */
 @RequiredArgsConstructor
 public class ExceptionGenerator implements SproutFileGenerator {
 

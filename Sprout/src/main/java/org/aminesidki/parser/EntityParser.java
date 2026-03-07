@@ -19,6 +19,9 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * Specific entity parsing implementation for <code>SproutParser</code> interface
+ */
 public class EntityParser implements SproutParser<EntityMetadata>{
 
     @Override

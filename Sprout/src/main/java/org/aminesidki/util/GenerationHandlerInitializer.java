@@ -14,6 +14,9 @@ import org.aminesidki.model.PartialGenerationFlags;
 
 import java.util.Map;
 
+/**
+ * Configures the <code>GenerationHandler</code> class to adapt it for generation
+ */
 @RequiredArgsConstructor
 public class GenerationHandlerInitializer {
     private final Map<String , EntityMetadata> emm;
