@@ -18,4 +18,16 @@ public class PartialGenerationFlags {
     public boolean cFlag;
     @CommandLine.Option(names = {"-e" , "--exception"})
     public boolean eFlag;
+
+    public static PartialGenerationFlags allEnabled(){
+        PartialGenerationFlags flags =  new PartialGenerationFlags();
+        flags.pFlag
+                = flags.rFlag
+                = flags.dFlag
+                = flags.sFlag
+                = flags.mFlag
+                = flags.cFlag
+                = flags.eFlag = true;
+        return flags;
+    }
 }

@@ -67,7 +67,7 @@ public class DefaultRunnable implements Runnable{
 
         //Generation pre-processing
         GenerationHandler generationHandler = new GenerationHandler(defaultDir , emm);
-        GenerationHandlerInitializer initializer = new GenerationHandlerInitializer(emm, hmm, pGroup, generationHandler);
+        GenerationHandlerInitializer initializer = new GenerationHandlerInitializer(emm, hmm, generationHandler, pGroup);
 
         //Generation
         initializer.initialize();
