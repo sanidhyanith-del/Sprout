@@ -4,7 +4,7 @@
   <groupId>org.AmineSidki</groupId>
   <artifactId>Sprout</artifactId>
   <name>Sprout</name>
-  <version>1.7</version>
+  <version>1.8</version>
   <url>https://maven.apache.org</url>
   <build>
     <resources>
@@ -41,7 +41,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>org.AmineSidki.App</mainClass>
+                  <mainClass>org.aminesidki.App</mainClass>
                 </transformer>
               </transformers>
             </configuration>
@@ -61,9 +61,10 @@
           </execution>
         </executions>
         <configuration>
+          <repositoryName>lib</repositoryName>
           <programs>
             <program>
-              <mainClass>org.AmineSidki.App</mainClass>
+              <mainClass>org.aminesidki.App</mainClass>
               <id>sprout</id>
             </program>
           </programs>
@@ -82,9 +83,9 @@
           </execution>
         </executions>
         <configuration>
-          <descriptorRefs>
-            <descriptorRef>bin</descriptorRef>
-          </descriptorRefs>
+          <descriptors>
+            <descriptor>src/assembly/distribution.xml</descriptor>
+          </descriptors>
           <finalName>sprout-${project.version}</finalName>
           <appendAssemblyId>false</appendAssemblyId>
         </configuration>
